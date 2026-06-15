@@ -1460,3 +1460,159 @@ body.admin-body {
   .dashboard-stats { grid-template-columns: 1fr; }
   .quick-grid { grid-template-columns: 1fr; }
 }
+
+/* ─── TOAST VISIBLE STATE  [FIX-01] ────────────────── */
+.toast {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 280ms ease, transform 280ms ease;
+}
+.toast.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── SECTION CARD BODY COLLAPSE  [FIX-03] ─────────── */
+.section-card-body {
+  overflow: hidden;
+  transition: max-height 300ms ease, opacity 300ms ease;
+  max-height: 9999px;
+  opacity: 1;
+}
+.section-card-body.collapsed {
+  max-height: 0 !important;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ─── MEDIA EMPTY STATE ─────────────────────────────── */
+.media-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 2.5rem 1rem;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-style: italic;
+}
+
+/* ─── PILAR CARD EDITOR  [FIX-04] ──────────────────── */
+.pilar-card-editor {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 0.75rem;
+  background: var(--bg-main);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 0.5rem;
+  transition: border-color var(--transition);
+}
+.pilar-card-editor:hover {
+  border-color: var(--brand-gold);
+}
+.pilar-card-editor-drag {
+  color: var(--text-muted);
+  cursor: grab;
+  font-size: 1.1rem;
+  user-select: none;
+  flex-shrink: 0;
+}
+.pilar-card-editor .field-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.8rem;
+}
+
+/* ─── UPLOAD PROGRESS BAR ───────────────────────────── */
+.upload-progress {
+  margin-top: 0.75rem;
+  height: 4px;
+  background: rgba(181,148,29,0.15);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.upload-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: var(--brand-gold);
+  border-radius: 2px;
+  transition: width 200ms ease;
+}
+
+/* ─── NAV EDITOR ITEM ───────────────────────────────── */
+.nav-editor-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  list-style: none;
+}
+.nav-editor-drag {
+  color: var(--text-muted);
+  cursor: grab;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  user-select: none;
+}
+.nav-editor-label {
+  flex: 1;
+  min-width: 80px;
+}
+.nav-editor-href {
+  flex: 2;
+  min-width: 120px;
+  font-family: monospace;
+  font-size: 0.78rem;
+}
+.nav-editor-delete {
+  flex-shrink: 0;
+  background: none;
+  border: 1.5px solid var(--error);
+  color: var(--error);
+  border-radius: var(--radius-sm);
+  padding: 0.3rem 0.45rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background var(--transition);
+}
+.nav-editor-delete:hover {
+  background: var(--error-bg);
+}
+
+/* ─── VERSION ITEM ──────────────────────────────────── */
+.version-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 0.6rem;
+}
+.version-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--brand-gold);
+  flex-shrink: 0;
+}
+.version-info {
+  flex: 1;
+  min-width: 0;
+}
+.version-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.version-meta {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}

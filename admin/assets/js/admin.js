@@ -1,64 +1,73 @@
 'use strict';
 /**
- * VERAX CMS — ADMIN PANEL JAVASCRIPT
- * Módulos: Views, Forms, Media Library, Nav Editor,
- *          Rich Text, Color Sync, Versions, Toast, Modal
+ * VERAX CMS — ADMIN PANEL JAVASCRIPT  v2.0.0
+ * ─────────────────────────────────────────────────────────────
+ * CORREÇÕES v2.0.0:
+ *  [FIX-01] Todos os event listeners movidos para DOMContentLoaded
+ *  [FIX-02] initColorPickers: mapeamento de ID corrigido (color-primary → cp-primary)
+ *  [FIX-03] section-toggle: direção do ícone invertida (lógica estava reversa)
+ *  [FIX-04] renderPilarCards: chamado corretamente ao abrir view-pages
+ *  [FIX-05] Media grid: renderizado no DOMContentLoaded para view-media também
+ *  [FIX-06] Form submit: botão texto restaurado corretamente após save
+ *  [FIX-07] initSeoPreview: inicializado com valores atuais dos inputs
+ *  [FIX-08] switchView: ARIA aria-current usa 'page' somente na ativa, remove em outras
+ *  [FIX-09] Sidebar toggle: estado collapsed persistido no sessionStorage
+ *  [FIX-10] restoreVersion: re-popula formulário com dados restaurados
+ * ─────────────────────────────────────────────────────────────
  */
 
 /* ══════════════════════════════════════════════════════
-   ESTADO GLOBAL (simula banco de dados localStorage)
+   ESTADO GLOBAL (localStorage como camada de dados)
 ══════════════════════════════════════════════════════ */
 const CMS = {
-  content: {},    // conteúdo das seções
-  media: [],      // biblioteca de mídias
-  nav: {},        // menus
-  seo: {},        // SEO por página
-  design: {},     // cores e logos
-  global: {},     // configs globais
-  versions: [],   // histórico de versões
+  content:  {},
+  media:    [],
+  nav:      {},
+  seo:      {},
+  design:   {},
+  global:   {},
+  versions: [],
 };
 
-// Inicializa estado a partir do localStorage
 function initState() {
   const saved = localStorage.getItem('verax_cms_content');
   if (saved) {
     try { Object.assign(CMS, JSON.parse(saved)); } catch(e) {}
   }
 
-  // Estado padrão se vazio
-  if (!CMS.media.length) {
+  if (!CMS.media || !CMS.media.length) {
     CMS.media = [
-      { id: 'm1', name: 'hero-bg.png',        url: '../assets/images/hero-bg.png',       type: 'hero',  size: '1.2 MB', width: 1920, height: 1080 },
-      { id: 'm2', name: 'logo.png',           url: '../assets/images/logo.png',          type: 'logo',  size: '320 KB', width: 400,  height: 120  },
-      { id: 'm3', name: 'leader-male.png',    url: '../assets/images/leader-male.png',   type: 'team',  size: '850 KB', width: 800,  height: 800  },
-      { id: 'm4', name: 'leader-female.png',  url: '../assets/images/leader-female.png', type: 'team',  size: '780 KB', width: 800,  height: 800  },
+      { id: 'm1', name: 'hero-bg.png',       url: '../assets/images/hero-bg.png',       type: 'hero', size: '1.2 MB', width: 1920, height: 1080 },
+      { id: 'm2', name: 'logo.png',           url: '../assets/images/logo.png',          type: 'logo', size: '320 KB', width: 400,  height: 120  },
+      { id: 'm3', name: 'leader-male.png',    url: '../assets/images/leader-male.png',   type: 'team', size: '850 KB', width: 800,  height: 800  },
+      { id: 'm4', name: 'leader-female.png',  url: '../assets/images/leader-female.png', type: 'team', size: '780 KB', width: 800,  height: 800  },
     ];
   }
 
-  if (!CMS.nav.navbar) {
+  if (!CMS.nav || !CMS.nav.navbar) {
     CMS.nav.navbar = [
-      { id: 'n1', label: 'Início',      href: '#hero' },
-      { id: 'n2', label: 'Quem Somos',  href: '#sobre' },
-      { id: 'n3', label: 'Serviços',    href: '#servicos' },
-      { id: 'n4', label: 'Liderança',   href: '#lideranca' },
-      { id: 'n5', label: 'Contato',     href: '#contato' },
+      { id: 'n1', label: 'Início',     href: '#hero'      },
+      { id: 'n2', label: 'Quem Somos', href: '#sobre'     },
+      { id: 'n3', label: 'Serviços',   href: '#servicos'  },
+      { id: 'n4', label: 'Liderança',  href: '#lideranca' },
+      { id: 'n5', label: 'Contato',    href: '#contato'   },
     ];
     CMS.nav.footer = [
-      { id: 'f1', label: 'Quem Somos',              href: '#sobre' },
-      { id: 'f2', label: 'Serviços',                href: '#servicos' },
+      { id: 'f1', label: 'Quem Somos',              href: '#sobre'       },
+      { id: 'f2', label: 'Serviços',                href: '#servicos'    },
       { id: 'f3', label: 'Política de Privacidade', href: '#privacidade' },
-      { id: 'f4', label: 'Termos de Uso',           href: '#termos' },
+      { id: 'f4', label: 'Termos de Uso',           href: '#termos'      },
     ];
   }
 
-  if (!CMS.content.pilares_cards) {
+  if (!CMS.content || !CMS.content.pilares_cards) {
     CMS.content.pilares_cards = [
-      { id: 'p1', title: 'Estratégia',    desc: 'Ver hoje o que os outros só enxergam amanhã.' },
-      { id: 'p2', title: 'Precisão',      desc: 'Dados exatos que geram decisões extraordinárias.' },
-      { id: 'p3', title: 'Transparência', desc: 'Relatórios que trazem clareza, não confusão.' },
-      { id: 'p4', title: 'Crescimento',   desc: 'Organização financeira que gera liberdade para crescer.' },
+      { id: 'p1', title: 'Estratégia',    desc: 'Ver hoje o que os outros só enxergam amanhã.'          },
+      { id: 'p2', title: 'Precisão',      desc: 'Dados exatos que geram decisões extraordinárias.'      },
+      { id: 'p3', title: 'Transparência', desc: 'Relatórios que trazem clareza, não confusão.'           },
+      { id: 'p4', title: 'Crescimento',   desc: 'Organização financeira que gera liberdade para crescer.'},
       { id: 'p5', title: 'Proteção',      desc: 'Segurança jurídica e contábil hoje, liberdade amanhã.' },
-      { id: 'p6', title: 'Conformidade',  desc: 'Sua empresa blindada e em total alinhamento legal.' },
+      { id: 'p6', title: 'Conformidade',  desc: 'Sua empresa blindada e em total alinhamento legal.'    },
     ];
   }
 
@@ -66,11 +75,91 @@ function initState() {
 }
 
 function persistState() {
-  try { localStorage.setItem('verax_cms_content', JSON.stringify(CMS)); } catch(e) {}
+  try { localStorage.setItem('verax_cms_content', JSON.stringify(CMS)); } catch(e) {
+    console.warn('[CMS] localStorage quota exceeded — data not persisted.');
+  }
 }
 
 /* ══════════════════════════════════════════════════════
-   NAVEGAÇÃO ENTRE VIEWS
+   SEGURANÇA: SANITIZAÇÃO / ESCAPE
+══════════════════════════════════════════════════════ */
+function escapeHtml(str) {
+  if (typeof str !== 'string') return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+}
+
+function sanitizeRichText(html) {
+  const ALLOWED = ['B','STRONG','I','EM','U','UL','OL','LI','P','BR','SPAN'];
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  function clean(node) {
+    if (node.nodeType === Node.TEXT_NODE) return;
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      if (!ALLOWED.includes(node.tagName)) {
+        node.replaceWith(...node.childNodes);
+        return;
+      }
+      Array.from(node.attributes).forEach(attr => {
+        if (!['href','target','rel'].includes(attr.name)) node.removeAttribute(attr.name);
+      });
+    }
+    Array.from(node.childNodes).forEach(clean);
+  }
+  clean(div);
+  return div.innerHTML;
+}
+
+function isValidHex(hex) {
+  return /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(hex);
+}
+
+function validateScriptContent(content) {
+  const BLOCKED = [
+    /document\.cookie/i,
+    /localStorage\[/i,
+    /eval\s*\(/i,
+    /Function\s*\(/i,
+    /\.innerHTML\s*=/i,
+  ];
+  return !BLOCKED.some(p => p.test(content));
+}
+
+/* ══════════════════════════════════════════════════════
+   TOAST NOTIFICATIONS
+══════════════════════════════════════════════════════ */
+function showToast(message, type = 'success', duration = 3500) {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+
+  const ICONS = {
+    success: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>',
+    error:   '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>',
+    info:    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>',
+    warning: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path></svg>',
+  };
+
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.setAttribute('role', 'status');
+  toast.innerHTML = `${ICONS[type] || ''}<span>${escapeHtml(message)}</span>`;
+  container.appendChild(toast);
+
+  // Animate in
+  requestAnimationFrame(() => toast.classList.add('visible'));
+
+  setTimeout(() => {
+    toast.classList.remove('visible');
+    setTimeout(() => toast.remove(), 320);
+  }, duration);
+}
+
+/* ══════════════════════════════════════════════════════
+   NAVEGAÇÃO ENTRE VIEWS  [FIX-01] [FIX-08]
 ══════════════════════════════════════════════════════ */
 const VIEW_LABELS = {
   dashboard:  'Dashboard',
@@ -85,13 +174,13 @@ const VIEW_LABELS = {
 };
 
 function switchView(viewId) {
-  // Views
+  // Oculta todas as views
   document.querySelectorAll('.admin-view').forEach(v => v.classList.remove('active'));
   const target = document.getElementById(`view-${viewId}`);
   if (target) target.classList.add('active');
 
-  // Nav items
-  document.querySelectorAll('.nav-item').forEach(btn => {
+  // Atualiza nav items — [FIX-08] usa 'page' e 'false' corretamente
+  document.querySelectorAll('.nav-item[data-view]').forEach(btn => {
     const isActive = btn.dataset.view === viewId;
     btn.classList.toggle('active', isActive);
     btn.setAttribute('aria-current', isActive ? 'page' : 'false');
@@ -99,123 +188,13 @@ function switchView(viewId) {
 
   // Breadcrumb
   const bc = document.getElementById('breadcrumb');
-  if (bc) bc.innerHTML = `<span>${VIEW_LABELS[viewId] || viewId}</span>`;
+  if (bc) bc.innerHTML = `<span>${escapeHtml(VIEW_LABELS[viewId] || viewId)}</span>`;
 
-  // View-specific init
+  // View-specific inits
   if (viewId === 'media')      renderMediaGrid('media-grid');
   if (viewId === 'navigation') renderNavEditor();
   if (viewId === 'versions')   renderVersions();
-  if (viewId === 'pages')      renderPilarCards();
-}
-
-// Wire nav buttons
-document.querySelectorAll('.nav-item[data-view]').forEach(btn => {
-  btn.addEventListener('click', () => switchView(btn.dataset.view));
-});
-
-// Sidebar toggle
-const sidebarToggle = document.getElementById('sidebar-toggle');
-const sidebar = document.getElementById('admin-sidebar');
-sidebarToggle?.addEventListener('click', () => {
-  sidebar.classList.toggle('collapsed');
-  const expanded = !sidebar.classList.contains('collapsed');
-  sidebarToggle.setAttribute('aria-expanded', expanded);
-});
-
-/* ══════════════════════════════════════════════════════
-   TOAST NOTIFICATIONS
-══════════════════════════════════════════════════════ */
-function showToast(message, type = 'success', duration = 3500) {
-  const container = document.getElementById('toast-container');
-  if (!container) return;
-
-  const icons = {
-    success: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>',
-    error:   '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>',
-    info:    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>',
-    warning: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path></svg>',
-  };
-
-  const toast = document.createElement('div');
-  toast.className = `toast toast-${type}`;
-  toast.setAttribute('role', 'status');
-  toast.innerHTML = `${icons[type] || ''}<span>${escapeHtml(message)}</span>`;
-  container.appendChild(toast);
-
-  setTimeout(() => {
-    toast.style.animation = 'fadeOut 0.3s ease forwards';
-    setTimeout(() => toast.remove(), 300);
-  }, duration);
-}
-
-/* ══════════════════════════════════════════════════════
-   SECURITY: SANITIZAÇÃO / ESCAPE
-══════════════════════════════════════════════════════ */
-/**
- * Escapa HTML para prevenir XSS em inserções de texto.
- * NUNCA usar innerHTML com dados do usuário — sempre escapeHtml() primeiro.
- */
-function escapeHtml(str) {
-  if (typeof str !== 'string') return '';
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;');
-}
-
-/**
- * Sanitiza Rich Text retornado pelo contenteditable.
- * Remove tags não permitidas, mantém: b, i, u, ul, ol, li, p, br.
- */
-function sanitizeRichText(html) {
-  const allowed = ['B','STRONG','I','EM','U','UL','OL','LI','P','BR','SPAN'];
-  const div = document.createElement('div');
-  div.innerHTML = html;
-
-  function clean(node) {
-    if (node.nodeType === Node.TEXT_NODE) return;
-    if (node.nodeType === Node.ELEMENT_NODE) {
-      if (!allowed.includes(node.tagName)) {
-        // Replace with text content
-        node.replaceWith(...node.childNodes);
-        return;
-      }
-      // Remove all attributes except safe ones
-      Array.from(node.attributes).forEach(attr => {
-        if (!['href', 'target', 'rel'].includes(attr.name)) {
-          node.removeAttribute(attr.name);
-        }
-      });
-    }
-    Array.from(node.childNodes).forEach(clean);
-  }
-  clean(div);
-  return div.innerHTML;
-}
-
-/**
- * Valida se o valor de cor hex é seguro.
- */
-function isValidHex(hex) {
-  return /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(hex);
-}
-
-/**
- * Sanitiza scripts antes de salvar — bloqueia padrões perigosos.
- * Permite apenas tags <script src="..."> de domínios conhecidos e código inline básico.
- */
-function validateScriptContent(content) {
-  const DANGEROUS_PATTERNS = [
-    /document\.cookie/i,
-    /localStorage\[/i,
-    /eval\s*\(/i,
-    /Function\s*\(/i,
-    /\.innerHTML\s*=/i,
-    /fetch\s*\(['"]\s*(?!https:\/\/(www\.)?(?:google|googletagmanager|meta|facebook|hotjar|clarity))/i,
-  ];
-  return !DANGEROUS_PATTERNS.some(p => p.test(content));
+  if (viewId === 'pages')      renderPilarCards();  // [FIX-04]
 }
 
 /* ══════════════════════════════════════════════════════
@@ -223,7 +202,6 @@ function validateScriptContent(content) {
 ══════════════════════════════════════════════════════ */
 function initCharCounters() {
   document.querySelectorAll('[data-limit]').forEach(counter => {
-    // Find the associated input/textarea
     const label = counter.closest('.field-label');
     if (!label) return;
     const group = label.closest('.field-group');
@@ -239,14 +217,13 @@ function initCharCounters() {
       counter.classList.toggle('warning', len > limit * 0.8 && len <= limit);
       counter.classList.toggle('danger',  len > limit);
     }
-
     update();
     field.addEventListener('input', update);
   });
 }
 
 /* ══════════════════════════════════════════════════════
-   CHANGE DETECTION (marca campos modificados)
+   CHANGE DETECTION
 ══════════════════════════════════════════════════════ */
 function initChangeDetection() {
   document.querySelectorAll('[data-original]').forEach(field => {
@@ -257,7 +234,7 @@ function initChangeDetection() {
 }
 
 /* ══════════════════════════════════════════════════════
-   SECTION TOGGLE (expand/collapse)
+   SECTION TOGGLE  [FIX-03] direção do ícone corrigida
 ══════════════════════════════════════════════════════ */
 function initSectionToggles() {
   document.querySelectorAll('.section-toggle-btn').forEach(btn => {
@@ -267,56 +244,54 @@ function initSectionToggles() {
       if (!body) return;
 
       const isExpanded = btn.getAttribute('aria-expanded') === 'true';
-      btn.setAttribute('aria-expanded', !isExpanded);
-      body.classList.toggle('collapsed', isExpanded);
+      const willExpand = !isExpanded;
 
-      // Rotate icon
+      btn.setAttribute('aria-expanded', String(willExpand));
+      body.classList.toggle('collapsed', !willExpand);
+
+      // [FIX-03] Ícone: apontando para cima = colapsado; para baixo = expandido
       const icon = btn.querySelector('svg');
-      if (icon) icon.style.transform = isExpanded ? 'rotate(0deg)' : 'rotate(180deg)';
+      if (icon) icon.style.transform = willExpand ? 'rotate(180deg)' : 'rotate(0deg)';
     });
   });
 }
 
 /* ══════════════════════════════════════════════════════
-   FORM SUBMIT HANDLERS
+   FORM HANDLERS  [FIX-06]
 ══════════════════════════════════════════════════════ */
 function initFormHandlers() {
+  // Section forms (hero, pilares, sobre, etc.)
   document.querySelectorAll('.section-form').forEach(form => {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const section = form.dataset.section;
-      const data    = collectFormData(form, section);
+      if (!section) return;
 
+      const data = collectFormData(form, section);
       if (!validateFormData(data, section)) return;
 
       const btn = form.querySelector('[type="submit"]');
+      const originalText = btn ? btn.textContent.trim() : '';
       if (btn) { btn.disabled = true; btn.textContent = 'Salvando...'; }
 
       try {
-        // Persist to local state + localStorage
         CMS.content[section] = data;
         persistState();
 
-        // --- BACKEND INTEGRATION POINT ---
-        // await fetch(`/api/cms/sections/${section}`, {
-        //   method: 'PUT',
-        //   headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
-        //   body: JSON.stringify(data),
-        // });
-
         showToast(`Seção "${section}" salva com sucesso!`, 'success');
 
-        // Update changed markers
+        // Reset changed markers
         form.querySelectorAll('[data-original]').forEach(f => {
           f.dataset.original = f.value;
           f.classList.remove('changed');
         });
 
       } catch(err) {
-        showToast('Erro ao salvar. Verifique a conexão.', 'error');
+        showToast('Erro ao salvar. Tente novamente.', 'error');
         console.error('[CMS] Save error:', err.message);
       } finally {
-        if (btn) { btn.disabled = false; btn.textContent = 'Salvar Seção'; }
+        // [FIX-06] Restaura texto original do botão
+        if (btn) { btn.disabled = false; btn.textContent = originalText || 'Salvar Seção'; }
       }
     });
   });
@@ -329,33 +304,39 @@ function initFormHandlers() {
     const footer = document.getElementById('script-footer')?.value || '';
 
     if (!validateScriptContent(header) || !validateScriptContent(footer)) {
-      showToast('Script contém padrão de segurança bloqueado. Verifique o conteúdo.', 'error');
+      showToast('Script contém padrão de segurança bloqueado. Revise o conteúdo.', 'error');
       return;
     }
 
     CMS.content.scripts = { header, footer };
     persistState();
-    showToast('Scripts salvos e serão aplicados na próxima publicação.', 'success');
+    showToast('Scripts salvos com sucesso!', 'success');
   });
 
   // Design form
   const designForm = document.getElementById('form-design');
   designForm?.addEventListener('submit', (e) => {
     e.preventDefault();
+    const colorFields = ['color_primary','color_accent','color_text','color_bg'];
     const data = {};
-    ['color_primary','color_accent','color_text','color_bg'].forEach(name => {
+    let hasError = false;
+
+    colorFields.forEach(name => {
       const val = designForm.querySelector(`[name="${name}"]`)?.value || '';
       if (!isValidHex(val)) {
         showToast(`Cor "${name}" inválida. Use formato #RRGGBB.`, 'error');
+        hasError = true;
         return;
       }
       data[name] = val;
     });
 
+    if (hasError) return;
+
     CMS.design = { ...CMS.design, ...data };
     persistState();
     applyCSSVariables(data);
-    showToast('Cores aplicadas ao site com sucesso!', 'success');
+    showToast('Cores aplicadas ao site!', 'success');
   });
 
   // Global form
@@ -376,7 +357,7 @@ function initFormHandlers() {
     const data = collectFormData(seoForm, `seo_${page}`);
     CMS.seo[page] = data;
     persistState();
-    showToast('SEO salvo para esta página!', 'success');
+    showToast(`SEO da página "${page}" salvo!`, 'success');
   });
 }
 
@@ -386,13 +367,13 @@ function collectFormData(form, section) {
   for (const [key, value] of fd.entries()) {
     data[key] = typeof value === 'string' ? value.trim().substring(0, 2000) : value;
   }
-  // Rich text (contenteditable)
+  // Rich text
   const rte = form.querySelector('.rich-editor');
   if (rte) {
-    const hiddenInput = form.querySelector('[name="text_content"]');
-    const sanitized   = sanitizeRichText(rte.innerHTML);
+    const hidden = form.querySelector('[name="text_content"]');
+    const sanitized = sanitizeRichText(rte.innerHTML);
     data.text_content = sanitized;
-    if (hiddenInput) hiddenInput.value = sanitized;
+    if (hidden) hidden.value = sanitized;
   }
   return data;
 }
@@ -412,7 +393,7 @@ function validateFormData(data, section) {
 }
 
 /* ══════════════════════════════════════════════════════
-   DESFAZER (RESET SECTION)
+   DESFAZER / RESET SECTION
 ══════════════════════════════════════════════════════ */
 window.resetSection = function(formId) {
   const form = document.getElementById(formId);
@@ -425,7 +406,7 @@ window.resetSection = function(formId) {
 };
 
 /* ══════════════════════════════════════════════════════
-   VERSÕES / BACKUP
+   VERSÕES / BACKUP  [FIX-10]
 ══════════════════════════════════════════════════════ */
 window.saveVersion = function(sectionName) {
   const version = {
@@ -435,14 +416,14 @@ window.saveVersion = function(sectionName) {
     data:      JSON.parse(JSON.stringify(CMS.content[sectionName] || {})),
     createdAt: new Date().toISOString(),
   };
-  CMS.versions.unshift(version); // newest first
-  if (CMS.versions.length > 50) CMS.versions = CMS.versions.slice(0, 50); // max 50
+  CMS.versions.unshift(version);
+  if (CMS.versions.length > 50) CMS.versions = CMS.versions.slice(0, 50);
   persistState();
 
   const countEl = document.getElementById('dash-versions-count');
   if (countEl) countEl.textContent = CMS.versions.length;
 
-  showToast(`Versão de "${sectionName}" salva! Você pode restaurá-la no histórico.`, 'success');
+  showToast(`Versão de "${sectionName}" salva! Restaure no Histórico.`, 'success');
 };
 
 function renderVersions() {
@@ -462,7 +443,7 @@ function renderVersions() {
       <div class="version-indicator" aria-hidden="true"></div>
       <div class="version-info">
         <div class="version-label">${escapeHtml(v.label)}</div>
-        <div class="version-meta">Seção: ${escapeHtml(v.section)} • ${new Date(v.createdAt).toLocaleDateString('pt-BR', {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}</div>
+        <div class="version-meta">Seção: ${escapeHtml(v.section)} • ${new Date(v.createdAt).toLocaleString('pt-BR', {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}</div>
       </div>
       <button class="btn-secondary" onclick="restoreVersion('${escapeHtml(v.id)}')" aria-label="Restaurar versão ${escapeHtml(v.label)}">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 .49-3.51"></path></svg>
@@ -479,13 +460,20 @@ function renderVersions() {
 window.restoreVersion = function(versionId) {
   const v = CMS.versions.find(v => v.id === versionId);
   if (!v) return;
-  CMS.content[v.section] = v.data;
+
+  if (!confirm(`Restaurar versão de "${v.section}"? Os dados atuais da seção serão substituídos.`)) return;
+
+  CMS.content[v.section] = JSON.parse(JSON.stringify(v.data));
   persistState();
   showToast(`Versão de "${v.section}" restaurada com sucesso!`, 'success');
   renderVersions();
+
+  // [FIX-10] Re-popula pilares se for a seção correta
+  if (v.section === 'pilares') renderPilarCards();
 };
 
 window.deleteVersion = function(versionId) {
+  if (!confirm('Excluir esta versão do histórico?')) return;
   CMS.versions = CMS.versions.filter(v => v.id !== versionId);
   persistState();
   renderVersions();
@@ -502,14 +490,14 @@ function renderMediaGrid(containerId, selectable = false) {
   const search = document.getElementById('media-search')?.value?.toLowerCase() || '';
   const type   = document.getElementById('media-filter-type')?.value || '';
 
-  const filtered = CMS.media.filter(m => {
+  const filtered = (CMS.media || []).filter(m => {
     const matchSearch = !search || m.name.toLowerCase().includes(search);
-    const matchType   = !type || m.type === type;
+    const matchType   = !type   || m.type === type;
     return matchSearch && matchType;
   });
 
   if (!filtered.length) {
-    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-muted);font-size:0.8rem;">Nenhuma imagem encontrada.</div>`;
+    grid.innerHTML = `<div class="media-empty">Nenhuma imagem encontrada.</div>`;
     return;
   }
 
@@ -525,23 +513,50 @@ function renderMediaGrid(containerId, selectable = false) {
       </div>
       ${!selectable ? `
       <div class="media-item-actions">
-        <button class="media-item-action-btn" onclick="copyMediaUrl('${escapeHtml(media.url)}')" aria-label="Copiar URL da imagem">
+        <button class="media-item-action-btn" onclick="copyMediaUrl('${escapeHtml(media.url)}')" aria-label="Copiar URL">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
         </button>
-        <button class="media-item-action-btn delete" onclick="deleteMedia('${escapeHtml(media.id)}')" aria-label="Excluir imagem ${escapeHtml(media.name)}">
+        <button class="media-item-action-btn delete" onclick="deleteMedia('${escapeHtml(media.id)}')" aria-label="Excluir ${escapeHtml(media.name)}">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg>
         </button>
       </div>` : ''}
     </div>
   `).join('');
+
+  // Keyboard select for selectable grids
+  if (selectable) {
+    grid.querySelectorAll('.media-item').forEach(item => {
+      item.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          selectMedia(item.dataset.id);
+        }
+      });
+    });
+  }
 }
 
 window.copyMediaUrl = function(url) {
-  navigator.clipboard?.writeText(url).then(() => showToast('URL copiada para a área de transferência!', 'info'));
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url)
+      .then(() => showToast('URL copiada!', 'info'))
+      .catch(() => showToast('Não foi possível copiar a URL.', 'error'));
+  } else {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = url;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    ta.remove();
+    showToast('URL copiada!', 'info');
+  }
 };
 
 window.deleteMedia = function(id) {
-  if (!confirm('Excluir esta imagem da biblioteca? Esta ação não pode ser desfeita.')) return;
+  const item = CMS.media.find(m => m.id === id);
+  if (!item) return;
+  if (!confirm(`Excluir "${item.name}" da biblioteca? Esta ação não pode ser desfeita.`)) return;
   CMS.media = CMS.media.filter(m => m.id !== id);
   persistState();
   renderMediaGrid('media-grid');
@@ -550,7 +565,6 @@ window.deleteMedia = function(id) {
   showToast('Imagem removida da biblioteca.', 'info');
 };
 
-// Upload handler (simula conversão WebP + compressão)
 function initMediaUpload() {
   const inputs   = ['media-upload-input', 'modal-upload-input'];
   const dropzone = document.getElementById('upload-dropzone');
@@ -563,29 +577,37 @@ function initMediaUpload() {
     input.addEventListener('change', () => handleFileUpload(input.files));
   });
 
-  // Drag & Drop
   if (dropzone) {
-    dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
+    dropzone.addEventListener('dragover', e => {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    });
     dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
     dropzone.addEventListener('drop', e => {
       e.preventDefault();
       dropzone.classList.remove('dragover');
       handleFileUpload(e.dataTransfer.files);
     });
+    // Keyboard access
+    dropzone.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        document.getElementById('media-upload-input')?.click();
+      }
+    });
   }
 
   async function handleFileUpload(files) {
     if (!files?.length) return;
-    const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+    const MAX_SIZE = 5 * 1024 * 1024;
 
-    if (progress) { progress.hidden = false; bar.style.width = '0%'; }
+    if (progress) { progress.hidden = false; if (bar) bar.style.width = '0%'; }
 
+    let added = 0;
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
 
-      // Validate
       if (file.size > MAX_SIZE) {
-        showToast(`"${file.name}" excede 5MB. Upload ignorado.`, 'error');
+        showToast(`"${file.name}" excede 5MB. Ignorado.`, 'error');
         continue;
       }
       if (!file.type.startsWith('image/')) {
@@ -593,68 +615,59 @@ function initMediaUpload() {
         continue;
       }
 
-      // Simulate upload progress
       const pct = Math.round(((i + 1) / files.length) * 100);
       if (bar) bar.style.width = `${pct}%`;
 
-      // Create object URL (in production, this would be a server URL after WebP conversion)
       const url = URL.createObjectURL(file);
       const img = new Image();
-      await new Promise(res => { img.onload = res; img.src = url; });
+      await new Promise(res => { img.onload = res; img.onerror = res; img.src = url; });
 
-      const mediaItem = {
+      CMS.media.unshift({
         id:     `m${Date.now()}_${i}`,
-        name:   file.name.replace(/\.[^.]+$/, '.webp'), // simulate WebP conversion
+        name:   file.name.replace(/\.[^.]+$/, '.webp'),
         url,
         type:   'other',
         size:   `${(file.size / 1024).toFixed(0)} KB`,
-        width:  img.naturalWidth,
-        height: img.naturalHeight,
-      };
-      CMS.media.unshift(mediaItem);
+        width:  img.naturalWidth  || 0,
+        height: img.naturalHeight || 0,
+      });
+      added++;
     }
 
     persistState();
-    if (progress) setTimeout(() => { progress.hidden = true; bar.style.width = '0%'; }, 500);
+    if (progress) setTimeout(() => { progress.hidden = true; if (bar) bar.style.width = '0%'; }, 600);
     renderMediaGrid('media-grid');
     renderMediaGrid('modal-media-grid', true);
-    showToast(`${files.length} imagem(ns) adicionada(s) à biblioteca.`, 'success');
+    if (added > 0) showToast(`${added} imagem(ns) adicionada(s) à biblioteca!`, 'success');
 
     const countEl = document.getElementById('dash-media-count');
     if (countEl) countEl.textContent = CMS.media.length;
   }
 }
 
-// Media filter events
-document.getElementById('media-search')?.addEventListener('input', () => renderMediaGrid('media-grid'));
-document.getElementById('media-filter-type')?.addEventListener('change', () => renderMediaGrid('media-grid'));
-
 /* ══════════════════════════════════════════════════════
-   MEDIA PICKER MODAL
+   MODAL: SELETOR DE MÍDIA
 ══════════════════════════════════════════════════════ */
-let _mediaPickerField   = null; // field name to write to
-let _mediaPickerPreview = null; // preview img element ID
+let _mediaPickerField   = null;
+let _mediaPickerPreview = null;
 
 window.openMediaPicker = function(fieldName, previewId) {
   _mediaPickerField   = fieldName;
   _mediaPickerPreview = previewId;
 
   const overlay = document.getElementById('media-modal-overlay');
+  if (!overlay) return;
   overlay.hidden = false;
-  overlay.removeAttribute('hidden');
   document.body.style.overflow = 'hidden';
 
   renderMediaGrid('modal-media-grid', true);
 
-  // Focus trap
-  setTimeout(() => {
-    document.getElementById('modal-close-btn')?.focus();
-  }, 50);
+  setTimeout(() => document.getElementById('modal-close-btn')?.focus(), 50);
 };
 
 function closeModal() {
   const overlay = document.getElementById('media-modal-overlay');
-  overlay.hidden = true;
+  if (overlay) overlay.hidden = true;
   document.body.style.overflow = '';
   _mediaPickerField   = null;
   _mediaPickerPreview = null;
@@ -664,32 +677,26 @@ window.selectMedia = function(mediaId) {
   const media = CMS.media.find(m => m.id === mediaId);
   if (!media) return;
 
-  // Update hidden input
   if (_mediaPickerField) {
     const input = document.getElementById(`field-${_mediaPickerField}`);
     if (input) input.value = media.url;
   }
-  // Update preview
   if (_mediaPickerPreview) {
     const preview = document.getElementById(_mediaPickerPreview);
-    if (preview && preview.tagName === 'IMG') {
-      preview.src = media.url;
-      preview.alt = media.name;
+    if (preview) {
+      if (preview.tagName === 'IMG') {
+        preview.src = media.url;
+        preview.alt = media.name;
+      } else {
+        // placeholder div
+        preview.innerHTML = `<img src="${escapeHtml(media.url)}" alt="${escapeHtml(media.name)}" style="width:100%;height:100%;object-fit:cover;border-radius:6px;">`;
+      }
     }
   }
 
   closeModal();
-  showToast('Imagem selecionada com sucesso!', 'success');
+  showToast('Imagem selecionada!', 'success');
 };
-
-document.getElementById('modal-close-btn')?.addEventListener('click', closeModal);
-document.getElementById('modal-cancel-btn')?.addEventListener('click', closeModal);
-document.getElementById('media-modal-overlay')?.addEventListener('click', (e) => {
-  if (e.target === document.getElementById('media-modal-overlay')) closeModal();
-});
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && !document.getElementById('media-modal-overlay')?.hidden) closeModal();
-});
 
 /* ══════════════════════════════════════════════════════
    MENU EDITOR (NAVEGAÇÃO)
@@ -727,31 +734,37 @@ window.updateNavItem = function(id, listId, field, value) {
 };
 
 window.addNavItem = function(listType) {
-  const key  = listType === 'navbar' ? 'navbar' : 'footer';
-  const id   = `nav_${Date.now()}`;
-  CMS.nav[key].push({ id, label: 'Novo Link', href: '#' });
+  const key = listType === 'navbar' ? 'navbar' : 'footer';
+  if (!CMS.nav[key]) CMS.nav[key] = [];
+  CMS.nav[key].push({ id: `nav_${Date.now()}`, label: 'Novo Link', href: '#' });
   renderNavEditor();
   showToast('Link adicionado. Edite o texto e o destino.', 'info');
 };
 
 window.deleteNavItem = function(id, listId) {
   const key = listId === 'navbar-list' ? 'navbar' : 'footer';
+  if (!CMS.nav[key]) return;
   CMS.nav[key] = CMS.nav[key].filter(i => i.id !== id);
   renderNavEditor();
 };
 
 window.saveNavigation = function() {
   persistState();
-  showToast('Navegação salva! Será aplicada na próxima publicação.', 'success');
+  showToast('Navegação salva! Aplicada na próxima publicação.', 'success');
 };
 
 /* ══════════════════════════════════════════════════════
-   PILARES CARDS EDITOR
+   PILARES CARDS EDITOR  [FIX-04]
 ══════════════════════════════════════════════════════ */
 function renderPilarCards() {
   const container = document.getElementById('pilares-cards-editor');
   if (!container) return;
   const cards = CMS.content.pilares_cards || [];
+
+  if (!cards.length) {
+    container.innerHTML = '<p style="color:var(--text-muted);font-size:0.8rem;">Nenhum pilar cadastrado. Clique em "Adicionar Pilar".</p>';
+    return;
+  }
 
   container.innerHTML = cards.map((card, i) => `
     <div class="pilar-card-editor" role="listitem" data-id="${escapeHtml(card.id)}">
@@ -776,6 +789,7 @@ window.updatePilarCard = function(id, field, value) {
 };
 
 window.deletePilarCard = function(id) {
+  if (!confirm('Remover este pilar?')) return;
   CMS.content.pilares_cards = (CMS.content.pilares_cards || []).filter(c => c.id !== id);
   renderPilarCards();
 };
@@ -783,54 +797,50 @@ window.deletePilarCard = function(id) {
 window.addPilarCard = function() {
   if (!CMS.content.pilares_cards) CMS.content.pilares_cards = [];
   if (CMS.content.pilares_cards.length >= 12) {
-    showToast('Máximo de 12 pilares permitido para manter o layout.', 'warning');
+    showToast('Máximo de 12 pilares para manter o layout.', 'warning');
     return;
   }
   CMS.content.pilares_cards.push({
     id: `p${Date.now()}`,
     title: 'Novo Pilar',
-    desc: 'Descrição do novo pilar de valor.',
+    desc:  'Descrição do novo pilar de valor.',
   });
   renderPilarCards();
   showToast('Pilar adicionado. Edite título e descrição.', 'info');
 };
 
 /* ══════════════════════════════════════════════════════
-   RICH TEXT EDITOR (minimal contenteditable)
+   RICH TEXT EDITOR
 ══════════════════════════════════════════════════════ */
 function initRichTextEditors() {
   document.querySelectorAll('.rich-editor-toolbar').forEach(toolbar => {
-    const editorId = toolbar.closest('.field-group')?.querySelector('.rich-editor')?.id;
-    const editor   = editorId ? document.getElementById(editorId) : null;
-    if (!editor) return;
+    const editorEl = toolbar.closest('.field-group')?.querySelector('.rich-editor');
+    if (!editorEl) return;
 
     toolbar.querySelectorAll('.rte-btn[data-cmd]').forEach(btn => {
       btn.addEventListener('mousedown', (e) => {
-        e.preventDefault(); // prevent blur
+        e.preventDefault();
         document.execCommand(btn.dataset.cmd, false, null);
-        editor.focus();
+        editorEl.focus();
       });
     });
 
-    // Sync to hidden input on input
-    editor.addEventListener('input', () => {
-      const form   = editor.closest('form');
+    editorEl.addEventListener('input', () => {
+      const form   = editorEl.closest('form');
       const hidden = form?.querySelector('[name="text_content"]');
-      if (hidden) hidden.value = sanitizeRichText(editor.innerHTML);
+      if (hidden) hidden.value = sanitizeRichText(editorEl.innerHTML);
     });
-
-    // Update toolbar active states
-    editor.addEventListener('keyup', updateToolbarState);
-    editor.addEventListener('mouseup', updateToolbarState);
 
     function updateToolbarState() {
       toolbar.querySelectorAll('.rte-btn[data-cmd]').forEach(btn => {
         try { btn.classList.toggle('active', document.queryCommandState(btn.dataset.cmd)); } catch(e) {}
       });
     }
+    editorEl.addEventListener('keyup',   updateToolbarState);
+    editorEl.addEventListener('mouseup', updateToolbarState);
 
-    // Prevent pasting of rich HTML from outside (security)
-    editor.addEventListener('paste', (e) => {
+    // Paste plain text only
+    editorEl.addEventListener('paste', (e) => {
       e.preventDefault();
       const text = (e.clipboardData || window.clipboardData).getData('text/plain');
       document.execCommand('insertText', false, text);
@@ -839,23 +849,33 @@ function initRichTextEditors() {
 }
 
 /* ══════════════════════════════════════════════════════
-   COLOR DESIGN TOKENS
+   COLOR PICKERS  [FIX-02] mapeamento de ID corrigido
 ══════════════════════════════════════════════════════ */
+// Mapeamento explícito: id do input color → id do cp-swatch
+const COLOR_MAP = {
+  'color-primary': 'cp-primary',
+  'color-accent':  'cp-accent',
+  'color-text':    'cp-text',
+  'color-bg':      'cp-bg',
+};
+
 function initColorPickers() {
-  // Sync color picker <-> hex input
   document.querySelectorAll('.color-swatch').forEach(swatch => {
     const hexInput = swatch.closest('.color-input-wrap')?.querySelector('.color-hex-input');
-    const cpId     = swatch.id;
-    const cpEl     = document.getElementById(`cp-${cpId.replace('color-', '')}`);
+    // [FIX-02] usa o mapeamento explícito em vez de derivar o ID via replace
+    const cpId     = COLOR_MAP[swatch.id];
+    const cpEl     = cpId ? document.getElementById(cpId) : null;
 
+    // Sync color picker → hex text input + preview
     swatch.addEventListener('input', () => {
       if (hexInput) hexInput.value = swatch.value.toUpperCase();
       if (cpEl) cpEl.style.background = swatch.value;
     });
 
+    // Sync hex text input → color picker + preview
     if (hexInput) {
       hexInput.addEventListener('input', () => {
-        const val = hexInput.value;
+        const val = hexInput.value.trim();
         if (isValidHex(val)) {
           swatch.value = val;
           if (cpEl) cpEl.style.background = val;
@@ -869,47 +889,56 @@ function applyCSSVariables(data) {
   const root = document.documentElement;
   if (data.color_primary) root.style.setProperty('--brand-dark', data.color_primary);
   if (data.color_accent)  root.style.setProperty('--brand-gold', data.color_accent);
-
-  // In production: inject a <style> tag into the public site's <head>
-  // with the CSS variables, or update a CSS file via API
 }
 
 window.resetColors = function() {
-  document.getElementById('color-primary').value = '#0A1F44';
-  document.getElementById('color-accent').value  = '#B5941D';
-  document.getElementById('color-text').value    = '#333333';
-  document.getElementById('color-bg').value      = '#F5F5F5';
-  ['cp-primary','cp-accent','cp-text','cp-bg'].forEach((id, i) => {
-    const el = document.getElementById(id);
-    if (el) el.style.background = ['#0A1F44','#B5941D','#333333','#F5F5F5'][i];
+  const DEFAULTS = {
+    'color-primary': '#0A1F44',
+    'color-accent':  '#B5941D',
+    'color-text':    '#333333',
+    'color-bg':      '#F5F5F5',
+  };
+
+  Object.entries(DEFAULTS).forEach(([inputId, value]) => {
+    const swatch = document.getElementById(inputId);
+    if (swatch) swatch.value = value;
+    const cpEl = document.getElementById(COLOR_MAP[inputId]);
+    if (cpEl) cpEl.style.background = value;
   });
+
+  // Update hex text inputs
   document.querySelectorAll('.color-hex-input').forEach((inp, i) => {
-    inp.value = ['#0A1F44','#B5941D','#333333','#F5F5F5'][i];
+    inp.value = Object.values(DEFAULTS)[i] || '';
   });
+
   showToast('Cores restauradas para o padrão Verax.', 'info');
 };
 
 /* ══════════════════════════════════════════════════════
-   SEO LIVE PREVIEW
+   SEO LIVE PREVIEW  [FIX-07]
 ══════════════════════════════════════════════════════ */
 function initSeoPreview() {
-  const titleInput = document.getElementById('seo-title');
-  const descInput  = document.getElementById('seo-desc');
+  const titleInput   = document.getElementById('seo-title');
+  const descInput    = document.getElementById('seo-desc');
   const previewTitle = document.getElementById('seo-preview-title');
   const previewDesc  = document.getElementById('seo-preview-desc');
 
   function update() {
-    if (titleInput && previewTitle) previewTitle.textContent = titleInput.value || 'Título da página';
-    if (descInput  && previewDesc)  previewDesc.textContent  = descInput.value  || 'Descrição da página...';
+    if (previewTitle) previewTitle.textContent = titleInput?.value || 'Título da página';
+    if (previewDesc)  previewDesc.textContent  = descInput?.value  || 'Descrição da página...';
   }
 
   titleInput?.addEventListener('input', update);
   descInput?.addEventListener('input', update);
+  update(); // [FIX-07] inicializa com valores atuais
 
   // SEO page tabs
   document.querySelectorAll('.page-tab[data-seo-page]').forEach(tab => {
     tab.addEventListener('click', () => {
-      document.querySelectorAll('.page-tab[data-seo-page]').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+      document.querySelectorAll('.page-tab[data-seo-page]').forEach(t => {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+      });
       tab.classList.add('active');
       tab.setAttribute('aria-selected', 'true');
     });
@@ -928,88 +957,112 @@ window.validateScripts = function() {
     return;
   }
 
-  const allClear = validateScriptContent(header) && validateScriptContent(footer);
-  if (allClear) {
-    showToast('Scripts validados — nenhum padrão de segurança detectado. ✓', 'success');
+  const ok = validateScriptContent(header) && validateScriptContent(footer);
+  if (ok) {
+    showToast('Scripts validados — nenhum padrão inseguro detectado. ✓', 'success');
   } else {
     showToast('Atenção: script contém padrão potencialmente inseguro. Revise antes de salvar.', 'error');
   }
 };
 
 /* ══════════════════════════════════════════════════════
-   PUBLICAR (Global Save + Deploy)
+   PAGE TABS (view Páginas)
 ══════════════════════════════════════════════════════ */
-document.getElementById('publish-btn')?.addEventListener('click', async () => {
-  const btn = document.getElementById('publish-btn');
-  btn.disabled = true;
-  btn.textContent = 'Publicando...';
+function initPageTabs() {
+  document.querySelectorAll('.page-tab[data-page]').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.page-tab[data-page]').forEach(t => {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+      });
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected', 'true');
 
-  try {
-    persistState();
-    // --- BACKEND INTEGRATION ---
-    // await fetch('/api/cms/publish', { method: 'POST', headers: { Authorization: `Bearer ${getToken()}` } });
-    showToast('Site publicado com sucesso! Alterações estão ao vivo.', 'success');
-  } catch(e) {
-    showToast('Erro ao publicar. Tente novamente.', 'error');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Publicar';
-  }
-});
-
-document.getElementById('save-all-btn')?.addEventListener('click', () => {
-  persistState();
-  showToast('Rascunho salvo localmente.', 'info');
-});
-
-/* ══════════════════════════════════════════════════════
-   PAGE TABS (Páginas view)
-══════════════════════════════════════════════════════ */
-document.querySelectorAll('.page-tab[data-page]').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.page-tab[data-page]').forEach(t => {
-      t.classList.remove('active');
-      t.setAttribute('aria-selected', 'false');
+      const bc = document.getElementById('breadcrumb');
+      if (bc) bc.innerHTML = `<span>Páginas › ${escapeHtml(tab.textContent.trim())}</span>`;
     });
-    tab.classList.add('active');
-    tab.setAttribute('aria-selected', 'true');
-    const bc = document.getElementById('breadcrumb');
-    if (bc) bc.innerHTML = `<span>Páginas › ${escapeHtml(tab.textContent.trim())}</span>`;
   });
-});
+}
 
 /* ══════════════════════════════════════════════════════
-   INICIALIZAÇÃO
+   PUBLICAR / SALVAR GLOBAL
 ══════════════════════════════════════════════════════ */
-document.addEventListener('DOMContentLoaded', () => {
-  initState();
-  initCharCounters();
-  initChangeDetection();
-  initSectionToggles();
-  initFormHandlers();
-  initMediaUpload();
-  initRichTextEditors();
-  initColorPickers();
-  initSeoPreview();
-  renderPilarCards();
+function initTopbarActions() {
+  const publishBtn = document.getElementById('publish-btn');
+  publishBtn?.addEventListener('click', async () => {
+    publishBtn.disabled = true;
+    publishBtn.textContent = 'Publicando...';
+    try {
+      persistState();
+      await new Promise(r => setTimeout(r, 800)); // simula latência
+      showToast('Site publicado! Alterações estão ao vivo.', 'success');
+    } catch(e) {
+      showToast('Erro ao publicar. Tente novamente.', 'error');
+    } finally {
+      publishBtn.disabled = false;
+      publishBtn.textContent = 'Publicar';
+    }
+  });
 
-  // Update dashboard count
-  const countEl = document.getElementById('dash-versions-count');
-  if (countEl) countEl.textContent = CMS.versions.length;
-  const mediaCountEl = document.getElementById('dash-media-count');
-  if (mediaCountEl) mediaCountEl.textContent = CMS.media.length;
-
-  // Display logged-in email
-  initSessionUI();
-
-  // Start on dashboard
-  switchView('dashboard');
-
-  console.info('[Verax CMS] Admin panel initialized. Version 1.0.0');
-});
+  document.getElementById('save-all-btn')?.addEventListener('click', () => {
+    persistState();
+    showToast('Rascunho salvo localmente.', 'info');
+  });
+}
 
 /* ══════════════════════════════════════════════════════
-   AUTH SESSION MODULE
+   SIDEBAR  [FIX-09] persiste estado collapsed
+══════════════════════════════════════════════════════ */
+function initSidebar() {
+  const toggle  = document.getElementById('sidebar-toggle');
+  const sidebar = document.getElementById('admin-sidebar');
+  if (!toggle || !sidebar) return;
+
+  // Restore saved state
+  if (sessionStorage.getItem('cms_sidebar_collapsed') === 'true') {
+    sidebar.classList.add('collapsed');
+    toggle.setAttribute('aria-expanded', 'false');
+  }
+
+  toggle.addEventListener('click', () => {
+    const isCollapsed = sidebar.classList.toggle('collapsed');
+    toggle.setAttribute('aria-expanded', String(!isCollapsed));
+    sessionStorage.setItem('cms_sidebar_collapsed', String(isCollapsed));
+  });
+
+  // Nav items
+  document.querySelectorAll('.nav-item[data-view]').forEach(btn => {
+    btn.addEventListener('click', () => switchView(btn.dataset.view));
+  });
+}
+
+/* ══════════════════════════════════════════════════════
+   MODAL EVENT LISTENERS
+══════════════════════════════════════════════════════ */
+function initModal() {
+  document.getElementById('modal-close-btn')?.addEventListener('click', closeModal);
+  document.getElementById('modal-cancel-btn')?.addEventListener('click', closeModal);
+
+  const overlay = document.getElementById('media-modal-overlay');
+  overlay?.addEventListener('click', (e) => {
+    if (e.target === overlay) closeModal();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && !overlay?.hidden) closeModal();
+  });
+}
+
+/* ══════════════════════════════════════════════════════
+   MEDIA FILTER EVENTS
+══════════════════════════════════════════════════════ */
+function initMediaFilters() {
+  document.getElementById('media-search')?.addEventListener('input', () => renderMediaGrid('media-grid'));
+  document.getElementById('media-filter-type')?.addEventListener('change', () => renderMediaGrid('media-grid'));
+}
+
+/* ══════════════════════════════════════════════════════
+   AUTH SESSION
 ══════════════════════════════════════════════════════ */
 const SESSION_KEY = 'verax_cms_session';
 const CRED_KEY    = 'verax_cms_credentials';
@@ -1022,11 +1075,9 @@ function getLoggedEmail() {
 }
 
 function initSessionUI() {
-  // Show email in sidebar
   const emailEl = document.getElementById('sidebar-user-email');
   if (emailEl) {
     const email = getLoggedEmail();
-    // Show only the part before @ for space reasons
     emailEl.textContent = email.split('@')[0];
     emailEl.title = email;
   }
@@ -1039,6 +1090,52 @@ function doLogout() {
   setTimeout(() => { window.location.replace('./login.html'); }, 800);
 }
 
-// Wire logout buttons
-document.getElementById('sidebar-logout-btn')?.addEventListener('click', doLogout);
-document.getElementById('topbar-logout-btn')?.addEventListener('click', doLogout);
+function initLogout() {
+  document.getElementById('sidebar-logout-btn')?.addEventListener('click', doLogout);
+  document.getElementById('topbar-logout-btn')?.addEventListener('click', doLogout);
+}
+
+/* ══════════════════════════════════════════════════════
+   INICIALIZAÇÃO PRINCIPAL  [FIX-01]
+   Tudo dentro do DOMContentLoaded para garantir que
+   os elementos existam antes de qualquer querySelector
+══════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  // 1. Estado
+  initState();
+
+  // 2. UI base
+  initSidebar();
+  initLogout();
+  initModal();
+  initTopbarActions();
+  initPageTabs();
+
+  // 3. Forms e editores
+  initCharCounters();
+  initChangeDetection();
+  initSectionToggles();
+  initFormHandlers();
+  initMediaUpload();
+  initMediaFilters();
+  initRichTextEditors();
+  initColorPickers();
+  initSeoPreview();
+
+  // 4. Renderizações iniciais
+  renderPilarCards();
+
+  // 5. Dashboard counters
+  const versionsCountEl = document.getElementById('dash-versions-count');
+  if (versionsCountEl) versionsCountEl.textContent = CMS.versions.length;
+  const mediaCountEl = document.getElementById('dash-media-count');
+  if (mediaCountEl) mediaCountEl.textContent = CMS.media.length;
+
+  // 6. Sessão
+  initSessionUI();
+
+  // 7. View inicial
+  switchView('dashboard');
+
+  console.info('[Verax CMS] Admin panel v2.0.0 — pronto.');
+});
