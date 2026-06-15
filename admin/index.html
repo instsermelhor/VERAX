@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Verax CMS — Painel Administrativo</title>
+
+  <!-- Preconnect fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Lora:wght@400;500&display=swap">
+
+  <!-- TipTap Rich Text Editor (via CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/@tiptap/core@2.1.13/dist/tiptap-core.umd.min.js" defer></script>
+
+  <link rel="stylesheet" href="assets/css/admin.css">
+  <link rel="icon" href="../assets/images/logo.png">
+
+  <!-- Auth Guard: redirect to login if no valid session -->
+  <script>
+    (function() {
+      'use strict';
+      var SESSION_KEY = 'verax_cms_session';
+      try {
+        var session = JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null');
+        if (!session || (Date.now() - session.ts) >= 8 * 60 * 60 * 1000) {
+          window.location.replace('./login.html');
+        }
+      } catch(e) {
+        window.location.replace('./login.html');
+      }
+    })();
+  </script>
+</head>
+<body class="admin-body" data-theme="light">
+
+  <!-- ═══ SIDEBAR ═══════════════════════════════════════════ -->
+  <aside class="admin-sidebar" id="admin-sidebar" role="navigation" aria-label="Menu do painel">
+    <div class="sidebar-header">
+      <img src="../assets/images/logo.png" alt="Verax CMS" class="sidebar-logo" width="120" height="36">
+      <span class="sidebar-badge">CMS Admin</span>
+    </div>
+
+    <nav class="sidebar-nav" aria-label="Módulos do CMS">
+      <ul role="list">
+        <li>
+          <button class="nav-item active" data-view="dashboard" id="nav-dashboard" aria-current="page">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            <span>Dashboard</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-item" data-view="pages" id="nav-pages">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            <span>Páginas</span>
+            <span class="nav-badge">5</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-item" data-view="media" id="nav-media">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+            <span>Biblioteca de Mídia</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-item" data-view="navigation" id="nav-navigation">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            <span>Menus & Navegação</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-item" data-view="seo" id="nav-seo">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <span>SEO & Meta Tags</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-item" data-view="scripts" id="nav-scripts">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+            <span>Scripts & Rastreamento</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-item" data-view="design" id="nav-design">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"></path><path d="M5 12H2M22 12h-3"></path></svg>
+            <span>Design & Identidade</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-item" data-view="global" id="nav-global">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+            <span>Config. Globais</span>
+          </button>
+        </li>
+        <li class="nav-divider" role="separator"></li>
+        <li>
+          <button class="nav-item" data-view="versions" id="nav-versions">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 .49-3.51"></path></svg>
+            <span>Histórico de Versões</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="../index.html" target="_blank" class="sidebar-preview-link" aria-label="Ver site ao vivo">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+        Ver Site ao Vivo
+      </a>
+      <div class="sidebar-user">
+        <div class="user-avatar" aria-hidden="true">A</div>
+        <div class="user-info">
+          <span class="user-name" id="sidebar-user-email">Administrador</span>
+          <span class="user-role">Super Admin</span>
+        </div>
+      </div>
+      <button class="sidebar-logout-btn" id="sidebar-logout-btn" aria-label="Sair do painel administrativo">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        <span>Sair</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ═══ MAIN CONTENT ═══════════════════════════════════════ -->
+  <main class="admin-main" id="admin-main">
+
+    <!-- Top Bar -->
+    <header class="admin-topbar" role="banner">
+      <button class="topbar-menu-toggle" id="sidebar-toggle" aria-label="Toggle sidebar" aria-expanded="true" aria-controls="admin-sidebar">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      </button>
+      <div class="topbar-breadcrumb" id="breadcrumb" aria-label="Breadcrumb">
+        <span>Dashboard</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="topbar-btn" id="save-all-btn" aria-label="Salvar todas as alterações">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+          Salvar
+        </button>
+        <button class="topbar-btn topbar-btn-primary" id="publish-btn" aria-label="Publicar alterações">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 2 15 22 11 12 2 8 22 2"></polyline></svg>
+          Publicar
+        </button>
+        <button class="topbar-btn topbar-logout" id="topbar-logout-btn" aria-label="Sair do painel">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+          Sair
+        </button>
+      </div>
+    </header>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- ─── VIEW: DASHBOARD ─────────────────────────────────── -->
+    <div class="admin-view active" id="view-dashboard">
+      <div class="view-header">
+        <h1 class="view-title">Dashboard</h1>
+        <p class="view-desc">Visão geral do conteúdo do site Verax.</p>
+      </div>
+
+      <div class="dashboard-stats">
+        <div class="stat-card">
+          <div class="stat-card-icon gold">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+          </div>
+          <div class="stat-card-info">
+            <span class="stat-number">5</span>
+            <span class="stat-label">Páginas</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon navy">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+          </div>
+          <div class="stat-card-info">
+            <span class="stat-number" id="dash-media-count">4</span>
+            <span class="stat-label">Mídias</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon green">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          </div>
+          <div class="stat-card-info">
+            <span class="stat-number" id="dash-versions-count">0</span>
+            <span class="stat-label">Versões Salvas</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon orange">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 .49-3.51"></path></svg>
+          </div>
+          <div class="stat-card-info">
+            <span class="stat-number">Pendente</span>
+            <span class="stat-label">Último Publish</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-quick">
+        <h2 class="section-heading">Acesso Rápido</h2>
+        <div class="quick-grid">
+          <button class="quick-card" data-view="pages" onclick="switchView('pages')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B5941D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            <span>Editar Hero da Home</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+          <button class="quick-card" data-view="media" onclick="switchView('media')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B5941D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+            <span>Gerenciar Imagens</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+          <button class="quick-card" data-view="seo" onclick="switchView('seo')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B5941D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <span>Configurar SEO</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+          <button class="quick-card" data-view="design" onclick="switchView('design')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B5941D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+            <span>Cores & Identidade</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── VIEW: PÁGINAS ───────────────────────────────────── -->
+    <div class="admin-view" id="view-pages">
+      <div class="view-header">
+        <div>
+          <h1 class="view-title">Editor de Páginas</h1>
+          <p class="view-desc">Selecione uma página e seção para editar o conteúdo.</p>
+        </div>
+      </div>
+
+      <!-- Page Selector -->
+      <div class="page-selector" role="tablist" aria-label="Selecionar página">
+        <button class="page-tab active" role="tab" aria-selected="true" data-page="home" aria-controls="sections-panel">Home</button>
+        <button class="page-tab" role="tab" aria-selected="false" data-page="sobre">Quem Somos</button>
+        <button class="page-tab" role="tab" aria-selected="false" data-page="servicos">Serviços</button>
+        <button class="page-tab" role="tab" aria-selected="false" data-page="lideranca">Liderança</button>
+        <button class="page-tab" role="tab" aria-selected="false" data-page="contato">Contato</button>
+      </div>
+
+      <!-- Sections Panel -->
+      <div id="sections-panel" role="tabpanel">
+        <div class="sections-list" id="sections-list">
+
+          <!-- SECTION: Hero -->
+          <div class="section-card" id="section-hero">
+            <div class="section-card-header">
+              <div class="section-drag-handle" aria-hidden="true" title="Arrastar para reordenar">⠿</div>
+              <div class="section-info">
+                <h3 class="section-name">Hero Principal</h3>
+                <span class="section-type-badge">hero</span>
+              </div>
+              <div class="section-actions">
+                <button class="section-toggle-btn" aria-expanded="true" aria-controls="section-hero-body" aria-label="Expandir/colapsar seção Hero">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="section-card-body" id="section-hero-body">
+              <form class="section-form" id="form-hero" novalidate data-section="hero">
+
+                <div class="form-grid-2">
+                  <div class="field-group">
+                    <label class="field-label" for="hero-eyebrow">
+                      Eyebrow (texto pequeno acima do título)
+                      <span class="char-limit" data-limit="60">0/60</span>
+                    </label>
+                    <input type="text" id="hero-eyebrow" name="eyebrow" class="field-input" maxlength="60"
+                      value="Organização Contábil de Alto Valor"
+                      data-original="Organização Contábil de Alto Valor">
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="hero-cta-label">
+                      Texto do Botão CTA Principal
+                      <span class="char-limit" data-limit="50">0/50</span>
+                    </label>
+                    <input type="text" id="hero-cta-label" name="cta_label" class="field-input" maxlength="50"
+                      value="Falar com um Consultor Estratégico"
+                      data-original="Falar com um Consultor Estratégico">
+                  </div>
+                </div>
+
+                <div class="field-group">
+                  <label class="field-label" for="hero-title">
+                    Título Principal (H1)
+                    <span class="char-limit field-required" data-limit="80">0/80</span>
+                  </label>
+                  <input type="text" id="hero-title" name="title" class="field-input field-input-lg" maxlength="80" required
+                    value="A VERDADE SUSTENTA RESULTADOS."
+                    data-original="A VERDADE SUSTENTA RESULTADOS.">
+                  <span class="field-hint">Exibido em Montserrat Black maiúsculo. Máx. 80 caracteres para não quebrar o layout.</span>
+                </div>
+
+                <div class="field-group">
+                  <label class="field-label" for="hero-subtitle">
+                    Subtítulo
+                    <span class="char-limit" data-limit="160">0/160</span>
+                  </label>
+                  <textarea id="hero-subtitle" name="subtitle" class="field-textarea" maxlength="160" rows="2"
+                    data-original="Estabilidade, confiança e autoridade. A base que sustenta a sua gestão empresarial.">Estabilidade, confiança e autoridade. A base que sustenta a sua gestão empresarial.</textarea>
+                </div>
+
+                <div class="form-grid-3">
+                  <div class="field-group">
+                    <label class="field-label" for="hero-stat1-number">Estatística 1 — Número</label>
+                    <input type="number" id="hero-stat1-number" name="stat1_number" class="field-input" value="15" min="0" max="9999">
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="hero-stat1-label">Estatística 1 — Rótulo</label>
+                    <input type="text" id="hero-stat1-label" name="stat1_label" class="field-input" value="Anos de Excelência" maxlength="30">
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="hero-stat1-suffix">Sufixo (ex: +, %)</label>
+                    <input type="text" id="hero-stat1-suffix" name="stat1_suffix" class="field-input" value="+" maxlength="4">
+                  </div>
+                </div>
+
+                <div class="field-group">
+                  <label class="field-label">Imagem de Fundo do Hero</label>
+                  <div class="media-picker" id="hero-bg-picker" data-field="hero_bg_image">
+                    <img src="../assets/images/hero-bg.png" alt="Background atual" class="media-picker-preview" id="hero-bg-preview">
+                    <div class="media-picker-overlay">
+                      <button type="button" class="media-picker-btn" onclick="openMediaPicker('hero_bg_image', 'hero-bg-preview')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                        Trocar Imagem
+                      </button>
+                    </div>
+                    <input type="hidden" name="hero_bg_image" id="field-hero_bg_image" value="../assets/images/hero-bg.png">
+                  </div>
+                  <span class="field-hint">Recomendado: 1920×1080px, formato WebP. Máx. 2MB.</span>
+                </div>
+
+                <div class="form-actions">
+                  <button type="button" class="btn-secondary" onclick="resetSection('form-hero')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 .49-3.51"></path></svg>
+                    Desfazer
+                  </button>
+                  <button type="button" class="btn-secondary" onclick="saveVersion('hero')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline></svg>
+                    Salvar Versão
+                  </button>
+                  <button type="submit" class="btn-primary">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    Salvar Seção
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- SECTION: Pilares -->
+          <div class="section-card" id="section-pilares">
+            <div class="section-card-header">
+              <div class="section-drag-handle" aria-hidden="true">⠿</div>
+              <div class="section-info">
+                <h3 class="section-name">Pilares de Valor</h3>
+                <span class="section-type-badge">grid-cards</span>
+              </div>
+              <div class="section-actions">
+                <button class="section-toggle-btn" aria-expanded="false" aria-controls="section-pilares-body" aria-label="Expandir/colapsar seção Pilares">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+              </div>
+            </div>
+            <div class="section-card-body collapsed" id="section-pilares-body">
+              <form class="section-form" id="form-pilares" novalidate data-section="pilares">
+                <div class="field-group">
+                  <label class="field-label" for="pilares-heading">Título da Seção</label>
+                  <input type="text" id="pilares-heading" name="heading" class="field-input" maxlength="80" value="Os Fundamentos que Nos Definem">
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="pilares-subtitle">Subtítulo</label>
+                  <textarea id="pilares-subtitle" name="subtitle" class="field-textarea" maxlength="200" rows="2">Cada decisão estratégica é sustentada por valores sólidos que transformam negócios.</textarea>
+                </div>
+
+                <h4 class="subsection-heading">Cards dos Pilares</h4>
+                <div class="cards-editor" id="pilares-cards-editor">
+                  <!-- Cards dinâmicos gerados pelo JS -->
+                </div>
+                <button type="button" class="btn-add-item" onclick="addPilarCard()">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  Adicionar Pilar
+                </button>
+
+                <div class="form-actions">
+                  <button type="button" class="btn-secondary" onclick="resetSection('form-pilares')">Desfazer</button>
+                  <button type="button" class="btn-secondary" onclick="saveVersion('pilares')">Salvar Versão</button>
+                  <button type="submit" class="btn-primary">Salvar Seção</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- SECTION: Sobre -->
+          <div class="section-card" id="section-sobre">
+            <div class="section-card-header">
+              <div class="section-drag-handle" aria-hidden="true">⠿</div>
+              <div class="section-info">
+                <h3 class="section-name">Quem Somos</h3>
+                <span class="section-type-badge">rich-text</span>
+              </div>
+              <div class="section-actions">
+                <button class="section-toggle-btn" aria-expanded="false" aria-controls="section-sobre-body" aria-label="Expandir/colapsar seção Sobre">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+              </div>
+            </div>
+            <div class="section-card-body collapsed" id="section-sobre-body">
+              <form class="section-form" id="form-sobre" data-section="sobre">
+                <div class="field-group">
+                  <label class="field-label" for="sobre-title">Título</label>
+                  <input type="text" id="sobre-title" name="title" class="field-input" maxlength="80" value="Uma Organização Fundada na Verdade">
+                </div>
+                <div class="field-group">
+                  <label class="field-label">
+                    Texto Principal (Rich Text)
+                    <span class="field-hint-inline">Suporta negrito, itálico e listas</span>
+                  </label>
+                  <div class="rich-editor-toolbar" role="toolbar" aria-label="Ferramentas de formatação">
+                    <button type="button" class="rte-btn" data-cmd="bold" aria-label="Negrito" title="Negrito (Ctrl+B)"><strong>B</strong></button>
+                    <button type="button" class="rte-btn" data-cmd="italic" aria-label="Itálico" title="Itálico (Ctrl+I)"><em>I</em></button>
+                    <button type="button" class="rte-btn" data-cmd="underline" aria-label="Sublinhado" title="Sublinhado"><u>U</u></button>
+                    <span class="rte-sep" aria-hidden="true"></span>
+                    <button type="button" class="rte-btn" data-cmd="insertUnorderedList" aria-label="Lista com marcadores" title="Lista">☰</button>
+                    <button type="button" class="rte-btn" data-cmd="insertOrderedList" aria-label="Lista numerada" title="Lista numerada">1.</button>
+                    <span class="rte-sep" aria-hidden="true"></span>
+                    <button type="button" class="rte-btn" data-cmd="removeFormat" aria-label="Remover formatação" title="Limpar formato">✕</button>
+                  </div>
+                  <div class="rich-editor" id="rte-sobre" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Editor de texto rico para Quem Somos">
+                    <p>A Verax Organização Contábil nasceu com um propósito claro: ser muito mais do que uma contabilidade tradicional. Somos parceiros estratégicos que entendem profundamente o universo empresarial.</p>
+                    <p>Com expertise consolidada em múltiplos segmentos econômicos, combinamos o rigor técnico das ciências contábeis com uma visão estratégica orientada ao resultado.</p>
+                  </div>
+                  <input type="hidden" id="sobre-text-hidden" name="text_content">
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="sobre-quote">Frase de Destaque (Blockquote)</label>
+                  <textarea id="sobre-quote" name="quote" class="field-textarea" maxlength="200" rows="2">Nosso papel: Proteger, Organizar, Planejar, Otimizar e Fazer Crescer.</textarea>
+                </div>
+                <div class="form-actions">
+                  <button type="button" class="btn-secondary" onclick="resetSection('form-sobre')">Desfazer</button>
+                  <button type="button" class="btn-secondary" onclick="saveVersion('sobre')">Salvar Versão</button>
+                  <button type="submit" class="btn-primary">Salvar Seção</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div><!-- /sections-list -->
+      </div><!-- /sections-panel -->
+    </div>
+
+    <!-- ─── VIEW: BIBLIOTECA DE MÍDIA ──────────────────────── -->
+    <div class="admin-view" id="view-media">
+      <div class="view-header">
+        <div>
+          <h1 class="view-title">Biblioteca de Mídia</h1>
+          <p class="view-desc">Gerencie todas as imagens do site. Upload converte automaticamente para WebP.</p>
+        </div>
+        <label class="btn-primary upload-label" for="media-upload-input" aria-label="Fazer upload de nova imagem">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="16 16 12 12 8 16"></polyline><line x1="12" y1="12" x2="12" y2="21"></line><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path></svg>
+          Upload de Imagem
+          <input type="file" id="media-upload-input" accept="image/*" multiple class="sr-only" aria-label="Selecionar imagens para upload">
+        </label>
+      </div>
+
+      <!-- Upload Drop Zone -->
+      <div class="upload-dropzone" id="upload-dropzone" role="region" aria-label="Área de drag and drop para upload">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#B5941D" stroke-width="1.2" aria-hidden="true"><polyline points="16 16 12 12 8 16"></polyline><line x1="12" y1="12" x2="12" y2="21"></line><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path></svg>
+        <p>Arraste imagens aqui ou <label for="media-upload-input" class="link-text">clique para selecionar</label></p>
+        <span class="upload-hint">PNG, JPG, WEBP, SVG • Máx. 5MB por arquivo • Convertido para WebP automaticamente</span>
+        <div class="upload-progress" id="upload-progress" hidden>
+          <div class="upload-progress-bar" id="upload-progress-bar"></div>
+        </div>
+      </div>
+
+      <!-- Media Filter -->
+      <div class="media-filter" role="search">
+        <input type="search" id="media-search" class="field-input media-search-input" placeholder="Pesquisar imagem por nome..." aria-label="Pesquisar na biblioteca de mídia">
+        <select id="media-filter-type" class="field-input media-filter-select" aria-label="Filtrar por tipo">
+          <option value="">Todos os tipos</option>
+          <option value="hero">Hero / Banner</option>
+          <option value="team">Equipe</option>
+          <option value="logo">Logo</option>
+          <option value="other">Outros</option>
+        </select>
+      </div>
+
+      <!-- Media Grid -->
+      <div class="media-grid" id="media-grid" role="list" aria-label="Biblioteca de imagens">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+
+    <!-- ─── VIEW: MENUS & NAVEGAÇÃO ─────────────────────────── -->
+    <div class="admin-view" id="view-navigation">
+      <div class="view-header">
+        <h1 class="view-title">Menus & Navegação</h1>
+        <p class="view-desc">Edite a ordem, textos e links da Navbar e do Rodapé.</p>
+      </div>
+
+      <div class="nav-editor-grid">
+        <div class="nav-editor-section">
+          <h2 class="section-heading">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            Navbar Principal
+          </h2>
+          <p class="section-desc">Arraste para reordenar. Alterações aplicadas imediatamente ao publicar.</p>
+          <ul class="nav-editor-list" id="navbar-list" role="list" aria-label="Links da navegação principal">
+            <!-- Populated by JS -->
+          </ul>
+          <button class="btn-add-item" onclick="addNavItem('navbar')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Adicionar Link
+          </button>
+        </div>
+
+        <div class="nav-editor-section">
+          <h2 class="section-heading">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="0" y="14" width="24" height="2"></rect></svg>
+            Rodapé
+          </h2>
+          <p class="section-desc">Links exibidos no rodapé do site.</p>
+          <ul class="nav-editor-list" id="footer-list" role="list" aria-label="Links do rodapé">
+            <!-- Populated by JS -->
+          </ul>
+          <button class="btn-add-item" onclick="addNavItem('footer')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Adicionar Link
+          </button>
+        </div>
+      </div>
+
+      <div class="form-actions" style="margin-top: 2rem;">
+        <button class="btn-primary" onclick="saveNavigation()">Salvar Navegação</button>
+      </div>
+    </div>
+
+    <!-- ─── VIEW: SEO ────────────────────────────────────────── -->
+    <div class="admin-view" id="view-seo">
+      <div class="view-header">
+        <h1 class="view-title">SEO & Meta Tags</h1>
+        <p class="view-desc">Controle completo de metadados por página.</p>
+      </div>
+
+      <div class="page-selector">
+        <button class="page-tab active" data-seo-page="home">Home</button>
+        <button class="page-tab" data-seo-page="sobre">Quem Somos</button>
+        <button class="page-tab" data-seo-page="servicos">Serviços</button>
+        <button class="page-tab" data-seo-page="contato">Contato</button>
+      </div>
+
+      <form class="section-form" id="form-seo-home" data-section="seo_home" style="max-width: 760px;">
+
+        <div class="field-group">
+          <label class="field-label" for="seo-title">
+            Meta Title
+            <span class="char-limit" data-limit="60">0/60</span>
+          </label>
+          <input type="text" id="seo-title" name="meta_title" class="field-input" maxlength="60"
+            value="Verax Organização Contábil | Contabilidade Estratégica de Alto Valor"
+            placeholder="Título da página para buscadores">
+          <span class="field-hint">Google exibe até 60 caracteres. Inclua a palavra-chave principal.</span>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="seo-desc">
+            Meta Description
+            <span class="char-limit" data-limit="160">0/160</span>
+          </label>
+          <textarea id="seo-desc" name="meta_description" class="field-textarea" maxlength="160" rows="3"
+            placeholder="Descrição resumida da página para os buscadores...">A Verax Organização Contábil oferece soluções estratégicas em contabilidade consultiva, planejamento tributário inteligente, BPO financeiro e auditoria fiscal.</textarea>
+          <span class="field-hint">Ideal entre 140–160 caracteres. Impacta diretamente o CTR no Google.</span>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="seo-slug">Slug / URL Amigável</label>
+          <div class="slug-input-wrap">
+            <span class="slug-prefix">veraxcontabil.com.br/</span>
+            <input type="text" id="seo-slug" name="slug" class="field-input slug-input"
+              value="" placeholder="quem-somos"
+              pattern="[a-z0-9\-]+" aria-describedby="seo-slug-hint">
+          </div>
+          <span class="field-hint" id="seo-slug-hint">Apenas letras minúsculas, números e hífens. Deixe vazio para a home.</span>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Open Graph Image (Compartilhamento nas Redes)</label>
+          <div class="media-picker small" id="og-image-picker">
+            <div class="og-preview-placeholder" id="og-preview">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+              <span>Sem imagem selecionada</span>
+            </div>
+            <button type="button" class="btn-secondary" onclick="openMediaPicker('og_image', 'og-preview')">
+              Selecionar Imagem OG
+            </button>
+            <input type="hidden" name="og_image" id="field-og_image">
+          </div>
+          <span class="field-hint">Recomendado: 1200×630px. Esta imagem aparece ao compartilhar o link nas redes sociais.</span>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="seo-keywords">Palavras-chave (separadas por vírgula)</label>
+          <input type="text" id="seo-keywords" name="keywords" class="field-input"
+            value="contabilidade, BPO financeiro, planejamento tributário, auditoria fiscal, compliance"
+            placeholder="palavra1, palavra2, palavra3">
+        </div>
+
+        <div class="seo-preview" aria-label="Prévia do resultado no Google">
+          <p class="seo-preview-label">Prévia no Google</p>
+          <div class="seo-preview-card">
+            <span class="seo-preview-url">veraxcontabil.com.br</span>
+            <h3 class="seo-preview-title" id="seo-preview-title">Verax Organização Contábil | Contabilidade Estratégica</h3>
+            <p class="seo-preview-desc" id="seo-preview-desc">A Verax Organização Contábil oferece soluções estratégicas em contabilidade consultiva, planejamento tributário inteligente...</p>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">Salvar SEO desta Página</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ─── VIEW: SCRIPTS ────────────────────────────────────── -->
+    <div class="admin-view" id="view-scripts">
+      <div class="view-header">
+        <h1 class="view-title">Scripts & Rastreamento</h1>
+        <p class="view-desc">Cole códigos de terceiros. Sanitizados e inseridos nos locais corretos do HTML.</p>
+      </div>
+
+      <div class="scripts-warning" role="alert">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B5941D" stroke-width="2" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+        <span><strong>Atenção:</strong> Apenas scripts de fontes confiáveis (Google, Meta, Microsoft). Scripts maliciosos afetam a segurança do site e dos usuários.</span>
+      </div>
+
+      <form class="section-form" id="form-scripts" style="max-width: 760px;">
+        <div class="field-group">
+          <label class="field-label" for="script-header">
+            Scripts no &lt;head&gt; (antes do fechamento)
+            <span class="field-hint-inline">Google Tag Manager, Meta Pixel ID</span>
+          </label>
+          <textarea id="script-header" name="header_scripts" class="field-textarea field-code" rows="8"
+            placeholder="<!-- Cole aqui scripts para inserir no <head> -->
+<!-- Exemplo: Google Tag Manager -->
+<!-- (GTM-XXXXXXX) -->
+<script>(function(w,d,s,l,i){...})(window,document,'script','dataLayer','GTM-XXXXXX');</script>"></textarea>
+          <span class="field-hint">⚠️ Apenas scripts necessários. Cada script extra impacta a performance (Core Web Vitals).</span>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="script-footer">
+            Scripts no &lt;body&gt; (antes do fechamento)
+            <span class="field-hint-inline">Analytics, Chat, Hotjar</span>
+          </label>
+          <textarea id="script-footer" name="footer_scripts" class="field-textarea field-code" rows="8"
+            placeholder="<!-- Cole aqui scripts para inserir antes do </body> -->
+<!-- Exemplo: Google Analytics 4 -->
+<script async src=&quot;https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX&quot;></script>"></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" onclick="validateScripts()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Validar Scripts
+          </button>
+          <button type="submit" class="btn-primary" id="save-scripts-btn">Salvar Scripts</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ─── VIEW: DESIGN & IDENTIDADE ──────────────────────── -->
+    <div class="admin-view" id="view-design">
+      <div class="view-header">
+        <h1 class="view-title">Design & Identidade Visual</h1>
+        <p class="view-desc">Cores, logos e tokens de marca. Alterações aplicadas globalmente via variáveis CSS.</p>
+      </div>
+
+      <form class="section-form" id="form-design" style="max-width: 760px;">
+
+        <h2 class="subsection-heading">Logotipos</h2>
+        <div class="form-grid-2">
+          <div class="field-group">
+            <label class="field-label">Logo Principal (Navbar / Footer)</label>
+            <div class="logo-picker">
+              <img src="../assets/images/logo.png" alt="Logo atual" class="logo-preview" id="logo-main-preview">
+              <button type="button" class="btn-secondary" onclick="openMediaPicker('logo_main', 'logo-main-preview')">Trocar Logo</button>
+            </div>
+            <input type="hidden" name="logo_main" id="field-logo_main" value="../assets/images/logo.png">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Favicon</label>
+            <div class="logo-picker">
+              <img src="../assets/images/logo.png" alt="Favicon atual" class="favicon-preview" id="favicon-preview">
+              <button type="button" class="btn-secondary" onclick="openMediaPicker('favicon', 'favicon-preview')">Trocar Favicon</button>
+              <input type="hidden" name="favicon" id="field-favicon" value="../assets/images/logo.png">
+            </div>
+            <span class="field-hint">Ideal: 32×32px ou 64×64px, formato ICO ou PNG.</span>
+          </div>
+        </div>
+
+        <h2 class="subsection-heading">Paleta de Cores</h2>
+        <div class="colors-grid">
+          <div class="color-field-group">
+            <label class="field-label" for="color-primary">Cor Primária (Azul Petróleo)</label>
+            <div class="color-input-wrap">
+              <input type="color" id="color-primary" name="color_primary" class="color-swatch" value="#0A1F44">
+              <input type="text" class="field-input color-hex-input" value="#0A1F44" maxlength="7" aria-label="Hex da cor primária" data-color-for="color-primary">
+            </div>
+            <span class="field-hint">Fundos escuros, navbar, hero.</span>
+          </div>
+          <div class="color-field-group">
+            <label class="field-label" for="color-accent">Cor de Destaque (Bronze Dourado)</label>
+            <div class="color-input-wrap">
+              <input type="color" id="color-accent" name="color_accent" class="color-swatch" value="#B5941D">
+              <input type="text" class="field-input color-hex-input" value="#B5941D" maxlength="7" aria-label="Hex da cor de destaque" data-color-for="color-accent">
+            </div>
+            <span class="field-hint">Botões, ícones, destaques.</span>
+          </div>
+          <div class="color-field-group">
+            <label class="field-label" for="color-text">Cor de Texto Principal</label>
+            <div class="color-input-wrap">
+              <input type="color" id="color-text" name="color_text" class="color-swatch" value="#333333">
+              <input type="text" class="field-input color-hex-input" value="#333333" maxlength="7" aria-label="Hex da cor de texto" data-color-for="color-text">
+            </div>
+            <span class="field-hint">Parágrafos em fundos claros.</span>
+          </div>
+          <div class="color-field-group">
+            <label class="field-label" for="color-bg">Background Claro</label>
+            <div class="color-input-wrap">
+              <input type="color" id="color-bg" name="color_bg" class="color-swatch" value="#F5F5F5">
+              <input type="text" class="field-input color-hex-input" value="#F5F5F5" maxlength="7" aria-label="Hex do background" data-color-for="color-bg">
+            </div>
+            <span class="field-hint">Seções claras, off-white.</span>
+          </div>
+        </div>
+
+        <div class="color-preview-bar" aria-label="Prévia das cores">
+          <div class="cp-swatch" id="cp-primary" style="background:#0A1F44" title="Primária"></div>
+          <div class="cp-swatch" id="cp-accent"  style="background:#B5941D" title="Destaque"></div>
+          <div class="cp-swatch" id="cp-text"    style="background:#333333" title="Texto"></div>
+          <div class="cp-swatch" id="cp-bg"      style="background:#F5F5F5;border:1px solid #ddd" title="Background"></div>
+          <span class="cp-label">Prévia da Paleta</span>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" onclick="resetColors()">Restaurar Padrão</button>
+          <button type="submit" class="btn-primary">Aplicar Cores ao Site</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ─── VIEW: CONFIG. GLOBAIS ───────────────────────────── -->
+    <div class="admin-view" id="view-global">
+      <div class="view-header">
+        <h1 class="view-title">Configurações Globais</h1>
+        <p class="view-desc">Dados de contato, redes sociais e variáveis usadas em todo o site.</p>
+      </div>
+
+      <form class="section-form" id="form-global" style="max-width: 760px;">
+
+        <h2 class="subsection-heading">Dados de Contato</h2>
+        <div class="form-grid-2">
+          <div class="field-group">
+            <label class="field-label" for="global-phone">Telefone / WhatsApp</label>
+            <input type="tel" id="global-phone" name="phone" class="field-input" value="(11) 0000-0000" maxlength="20">
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="global-email">E-mail de Contato</label>
+            <input type="email" id="global-email" name="email" class="field-input" value="contato@veraxcontabil.com.br" maxlength="254">
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="global-address">Endereço</label>
+            <input type="text" id="global-address" name="address" class="field-input" value="São Paulo, SP — Brasil" maxlength="200">
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="global-whatsapp-link">Link do WhatsApp</label>
+            <input type="url" id="global-whatsapp-link" name="whatsapp_link" class="field-input" value="https://wa.me/5511000000000" placeholder="https://wa.me/55119...">
+          </div>
+        </div>
+
+        <h2 class="subsection-heading">Redes Sociais</h2>
+        <div class="form-grid-2">
+          <div class="field-group">
+            <label class="field-label" for="global-linkedin">LinkedIn</label>
+            <div class="field-input-icon-wrap">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.8" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+              <input type="url" id="global-linkedin" name="linkedin" class="field-input field-input-icon" value="https://www.linkedin.com/company/veraxcontabil" placeholder="https://linkedin.com/company/...">
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="global-instagram">Instagram</label>
+            <div class="field-input-icon-wrap">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.8" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path></svg>
+              <input type="url" id="global-instagram" name="instagram" class="field-input field-input-icon" value="https://www.instagram.com/veraxcontabil" placeholder="https://instagram.com/...">
+            </div>
+          </div>
+        </div>
+
+        <h2 class="subsection-heading">Nome do Site</h2>
+        <div class="form-grid-2">
+          <div class="field-group">
+            <label class="field-label" for="global-site-name">Nome do Site (usado em emails e SEO)</label>
+            <input type="text" id="global-site-name" name="site_name" class="field-input" value="Verax Organização Contábil" maxlength="80">
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="global-site-url">URL do Site</label>
+            <input type="url" id="global-site-url" name="site_url" class="field-input" value="https://www.veraxcontabil.com.br" placeholder="https://...">
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">Salvar Configurações Globais</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ─── VIEW: HISTÓRICO DE VERSÕES ─────────────────────── -->
+    <div class="admin-view" id="view-versions">
+      <div class="view-header">
+        <h1 class="view-title">Histórico de Versões</h1>
+        <p class="view-desc">Versões salvas manualmente. Restaure qualquer ponto anterior com um clique.</p>
+      </div>
+
+      <div class="versions-empty" id="versions-empty" role="status">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.2" aria-hidden="true"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 .49-3.51"></path></svg>
+        <p>Nenhuma versão salva ainda.</p>
+        <span>Use o botão "Salvar Versão" nas seções para criar um ponto de restauração.</span>
+      </div>
+
+      <div class="versions-list" id="versions-list" aria-label="Lista de versões salvas">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ═══ MODAL: SELETOR DE MÍDIA ═══════════════════════════ -->
+  <div class="modal-overlay" id="media-modal-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="media-modal-title">
+    <div class="modal" id="media-modal" role="document">
+      <div class="modal-header">
+        <h2 class="modal-title" id="media-modal-title">Selecionar Imagem</h2>
+        <button class="modal-close" id="modal-close-btn" aria-label="Fechar seletor de mídia">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="media-grid modal-media-grid" id="modal-media-grid" role="list" aria-label="Selecione uma imagem da biblioteca">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="modal-cancel-btn">Cancelar</button>
+        <label class="btn-primary upload-label" for="modal-upload-input">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="16 16 12 12 8 16"></polyline><line x1="12" y1="12" x2="12" y2="21"></line></svg>
+          Upload Nova Imagem
+          <input type="file" id="modal-upload-input" accept="image/*" class="sr-only" aria-label="Upload de nova imagem">
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/admin.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+# VERAX Organização Contábil — Site Institucional
+# .htaccess Security & Performance Configuration
+# Compatible: Apache 2.4+
+
+# ─── SECURITY HEADERS ─────────────────────────────────────────
+<IfModule mod_headers.c>
+    # Prevent Clickjacking
+    Header always set X-Frame-Options "DENY"
+
+    # Prevent MIME-type sniffing (XSS vector)
+    Header always set X-Content-Type-Options "nosniff"
+
+    # Referrer Policy
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+    # Permissions Policy (disable unneeded browser features)
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()"
+
+    # HSTS (enable after SSL cert is active — 1 year)
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+
+    # XSS Protection (legacy browsers)
+    Header always set X-XSS-Protection "1; mode=block"
+
+    # Content Security Policy
+    Header always set Content-Security-Policy "\
+        default-src 'self'; \
+        script-src 'self'; \
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; \
+        font-src 'self' https://fonts.gstatic.com; \
+        img-src 'self' data: blob:; \
+        connect-src 'self'; \
+        frame-src 'none'; \
+        object-src 'none'; \
+        base-uri 'self'; \
+        form-action 'self'; \
+        upgrade-insecure-requests; \
+    "
+
+    # Remove server signature
+    Header unset Server
+    Header unset X-Powered-By
+</IfModule>
+
+# ─── FORCE HTTPS REDIRECT ─────────────────────────────────────
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{HTTPS} off
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# ─── BLOCK SENSITIVE FILES ────────────────────────────────────
+<FilesMatch "(^\.env|composer\.json|package\.json|\.git|\.log|validation-schema\.js)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# ─── COMPRESSION (GZIP) ───────────────────────────────────────
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css application/javascript
+    AddOutputFilterByType DEFLATE application/json image/svg+xml text/plain
+    AddOutputFilterByType DEFLATE font/woff font/woff2 application/font-woff
+</IfModule>
+
+# ─── BROWSER CACHING ──────────────────────────────────────────
+<IfModule mod_expires.c>
+    ExpiresActive On
+    # HTML — no cache (always fresh)
+    ExpiresByType text/html                         "access plus 0 seconds"
+    # CSS and JS — 1 year (use versioned filenames / cache busting)
+    ExpiresByType text/css                          "access plus 1 year"
+    ExpiresByType application/javascript            "access plus 1 year"
+    # Images
+    ExpiresByType image/png                         "access plus 6 months"
+    ExpiresByType image/webp                        "access plus 6 months"
+    ExpiresByType image/svg+xml                     "access plus 6 months"
+    ExpiresByType image/x-icon                      "access plus 1 year"
+    # Fonts
+    ExpiresByType font/woff2                        "access plus 1 year"
+    ExpiresByType font/woff                         "access plus 1 year"
+</IfModule>
+
+# ─── BLOCK DIRECTORY LISTING ──────────────────────────────────
+Options -Indexes
+
+# ─── PREVENT ACCESS TO HIDDEN FILES ──────────────────────────
+<Files ".*">
+    Order Allow,Deny
+    Deny from all
+</Files>
