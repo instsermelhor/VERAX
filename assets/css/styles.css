@@ -357,7 +357,6 @@ h1, h2, h3, h4, h5, h6 {
 
 .section-header {
   text-align: center;
-  margin-bottom: var(--space-16);
   max-width: 640px;
   margin-inline: auto;
   margin-bottom: var(--space-16);
@@ -739,6 +738,7 @@ h1, h2, h3, h4, h5, h6 {
   height: 48px;
   background: linear-gradient(to bottom, var(--color-accent-gold), transparent);
   animation: scrollPulse 2s infinite;
+  will-change: transform;
 }
 
 .scroll-text {

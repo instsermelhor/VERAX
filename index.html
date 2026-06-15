@@ -22,8 +22,10 @@
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://www.veraxcontabil.com.br/">
   <meta name="twitter:title" content="Verax Organização Contábil">
   <meta name="twitter:description" content="Estabilidade, confiança e autoridade. A base que sustenta a sua gestão empresarial.">
+  <meta name="twitter:image" content="https://www.veraxcontabil.com.br/assets/images/logo.png">
 
   <!-- Security Headers (CSP via meta tag - supplement server-side headers) -->
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
@@ -92,7 +94,7 @@
       </button>
 
       <ul class="nav-menu" id="nav-menu" role="list">
-        <li><a href="#home" class="nav-link" aria-current="page">Início</a></li>
+        <li><a href="#hero" class="nav-link" aria-current="page">Início</a></li>
         <li><a href="#sobre" class="nav-link">Quem Somos</a></li>
         <li><a href="#servicos" class="nav-link">Serviços</a></li>
         <li><a href="#lideranca" class="nav-link">Liderança</a></li>
@@ -117,7 +119,7 @@
     ============================================================ -->
     <section id="hero" class="hero" aria-labelledby="hero-heading">
       <div class="hero-bg" aria-hidden="true">
-        <img src="assets/images/hero-bg.png" alt="" width="1920" height="1080" fetchpriority="high" decoding="sync" class="hero-bg-img">
+        <img src="assets/images/hero-bg.png" alt="" width="1920" height="1080" fetchpriority="high" decoding="async" class="hero-bg-img">
         <div class="hero-overlay" aria-hidden="true"></div>
       </div>
 
@@ -358,16 +360,16 @@
         </div>
 
         <div class="services-tabs" role="tablist" aria-label="Serviços da Verax">
-          <button class="service-tab active" id="tab-1" role="tab" aria-selected="true" aria-controls="panel-1" data-tab="1">
+          <button class="service-tab active" id="tab-1" role="tab" aria-selected="true" aria-controls="panel-1" data-tab="1" tabindex="0">
             Contabilidade Consultiva
           </button>
-          <button class="service-tab" id="tab-2" role="tab" aria-selected="false" aria-controls="panel-2" data-tab="2">
+          <button class="service-tab" id="tab-2" role="tab" aria-selected="false" aria-controls="panel-2" data-tab="2" tabindex="-1">
             Planejamento Tributário
           </button>
-          <button class="service-tab" id="tab-3" role="tab" aria-selected="false" aria-controls="panel-3" data-tab="3">
+          <button class="service-tab" id="tab-3" role="tab" aria-selected="false" aria-controls="panel-3" data-tab="3" tabindex="-1">
             BPO Financeiro
           </button>
-          <button class="service-tab" id="tab-4" role="tab" aria-selected="false" aria-controls="panel-4" data-tab="4">
+          <button class="service-tab" id="tab-4" role="tab" aria-selected="false" aria-controls="panel-4" data-tab="4" tabindex="-1">
             Auditoria & Compliance
           </button>
         </div>
@@ -711,7 +713,10 @@
                 <button type="submit" class="btn btn-primary btn-full" id="portal-login-btn">
                   Acessar Portal Seguro
                 </button>
-                <a href="#" class="portal-forgot-link" id="portal-forgot-link">Esqueceu sua senha?</a>
+                <a href="#" class="portal-forgot-link" id="portal-forgot-link"
+                   onclick="event.preventDefault(); alert('Para recuperar sua senha, entre em contato com o suporte: contato@veraxcontabil.com.br')">
+                  Esqueceu sua senha?
+                </a>
               </form>
               <div class="portal-security-footer" aria-label="Badges de segurança">
                 <div class="security-mini-badge">
@@ -776,7 +781,7 @@
                   <span class="channel-value">contato@veraxcontabil.com.br</span>
                 </div>
               </a>
-              <div class="contact-channel" aria-label="Endereço da Verax">
+              <a href="https://maps.google.com/?q=São+Paulo+SP" target="_blank" rel="noopener noreferrer" class="contact-channel" aria-label="Ver endereço da Verax no Google Maps">
                 <div class="contact-channel-icon" aria-hidden="true">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B5941D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
@@ -787,7 +792,7 @@
                   <span class="channel-label">Endereço</span>
                   <span class="channel-value">São Paulo, SP — Brasil</span>
                 </div>
-              </div>
+              </a>
             </div>
           </div>
 
@@ -887,7 +892,7 @@
                     placeholder="Descreva brevemente seu desafio ou necessidade contábil..."
                     required
                     aria-required="true"
-                    aria-describedby="lead-message-error"
+                    aria-describedby="lead-message-error lead-message-counter"
                     maxlength="1000"
                     rows="4"
                   ></textarea>
@@ -926,6 +931,31 @@
     </section>
 
   </main>
+
+  <!-- ============================================================
+       LEGAL SECTIONS (anchors for #privacidade #termos #cookies)
+       Required for LGPD compliance links in footer and consent form
+  ============================================================ -->
+  <section id="privacidade" class="legal-section" aria-labelledby="privacidade-heading" hidden>
+    <div class="container">
+      <h2 id="privacidade-heading">Política de Privacidade</h2>
+      <p>Em conformidade com a Lei Geral de Proteção de Dados (LGPD — Lei nº 13.709/2018), a Verax Organização Contábil coleta apenas os dados estritamente necessários para prestar seus serviços, como nome, e-mail e telefone fornecidos voluntariamente através de formulários. Esses dados não são compartilhados com terceiros sem consentimento expresso e são armazenados de forma segura. Para exercer seus direitos de acesso, correção ou exclusão de dados, entre em contato: <a href="mailto:contato@veraxcontabil.com.br">contato@veraxcontabil.com.br</a>.</p>
+    </div>
+  </section>
+
+  <section id="termos" class="legal-section" aria-labelledby="termos-heading" hidden>
+    <div class="container">
+      <h2 id="termos-heading">Termos de Uso</h2>
+      <p>O acesso e uso do site da Verax Organização Contábil estão sujeitos aos presentes Termos de Uso. O conteúdo deste site é de caráter informativo e não constitui assessoria jurídica ou contábil formal. A Verax reserva-se o direito de modificar conteúdos sem aviso prévio. Para solicitações formais, entre em contato através dos canais oficiais.</p>
+    </div>
+  </section>
+
+  <section id="cookies" class="legal-section" aria-labelledby="cookies-heading" hidden>
+    <div class="container">
+      <h2 id="cookies-heading">Política de Cookies</h2>
+      <p>Este site utiliza cookies essenciais para seu funcionamento correto (navegação, preferências). Com seu consentimento, podemos utilizar cookies analíticos para entender como os visitantes interagem com o site, sempre de forma anônima e agregada. Você pode rejeitar cookies não essenciais a qualquer momento através do banner de consentimento ou das configurações do seu navegador.</p>
+    </div>
+  </section>
 
   <!-- ============================================================
        FOOTER
