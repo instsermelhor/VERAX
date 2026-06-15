@@ -37,10 +37,10 @@ function initState() {
 
   if (!CMS.media || !CMS.media.length) {
     CMS.media = [
-      { id: 'm1', name: 'hero-bg.png',       url: '../assets/images/hero-bg.png',       type: 'hero', size: '1.2 MB', width: 1920, height: 1080 },
-      { id: 'm2', name: 'logo.png',           url: '../assets/images/logo.png',          type: 'logo', size: '320 KB', width: 400,  height: 120  },
-      { id: 'm3', name: 'leader-male.png',    url: '../assets/images/leader-male.png',   type: 'team', size: '850 KB', width: 800,  height: 800  },
-      { id: 'm4', name: 'leader-female.png',  url: '../assets/images/leader-female.png', type: 'team', size: '780 KB', width: 800,  height: 800  },
+      { id: 'm1', name: 'hero-bg.png',       url: '/assets/images/hero-bg.png',       type: 'hero', size: '1.2 MB', width: 1920, height: 1080 },
+      { id: 'm2', name: 'logo.png',           url: '/assets/images/logo.png',          type: 'logo', size: '320 KB', width: 400,  height: 120  },
+      { id: 'm3', name: 'leader-male.png',    url: '/assets/images/leader-male.png',   type: 'team', size: '850 KB', width: 800,  height: 800  },
+      { id: 'm4', name: 'leader-female.png',  url: '/assets/images/leader-female.png', type: 'team', size: '780 KB', width: 800,  height: 800  },
     ];
   }
 
@@ -1087,7 +1087,7 @@ function doLogout() {
   if (!confirm('Deseja realmente sair do painel administrativo?')) return;
   sessionStorage.removeItem(SESSION_KEY);
   showToast('Sessão encerrada. Redirecionando...', 'info');
-  setTimeout(() => { window.location.replace('./login.html'); }, 800);
+  setTimeout(() => { window.location.replace('/admin/login.html'); }, 800);
 }
 
 function initLogout() {

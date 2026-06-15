@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;1,400&display=swap">
-  <link rel="icon" href="../assets/images/logo.png">
+  <link rel="icon" href="/assets/images/logo.png">
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -473,7 +473,7 @@
     <div class="login-left-inner">
 
       <div class="brand-logo">
-        <img src="../assets/images/logo.png" alt="Verax Organização Contábil">
+        <img src="/assets/images/logo.png" alt="Verax Organização Contábil">
         <span class="brand-cms-tag">CMS Admin</span>
       </div>
 
@@ -773,7 +773,7 @@
 
   // Redirect se já logado
   if (isAuthenticated()) {
-    window.location.replace('./index.html');
+    window.location.replace('/admin/index.html');
   }
 
   /* ═══════════════════════════════════════════════════
@@ -1000,7 +1000,7 @@
       createSession();
       btnText.textContent = 'Redirecionando...';
       btn.disabled = true;
-      setTimeout(() => { window.location.replace('./index.html'); }, 600);
+      setTimeout(() => { window.location.replace('/admin/index.html'); }, 600);
     } else {
       registerFailedAttempt();
       updateAttemptDisplay();
