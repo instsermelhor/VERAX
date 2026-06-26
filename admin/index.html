@@ -134,13 +134,16 @@
         <span>Dashboard</span>
       </div>
       <div class="topbar-actions">
+        <!-- Indicador de status de sincronização CMS ↔ Site -->
+        <span id="sync-status-indicator" class="sync-status-indicator sync-status-synced" title="Status de publicação">&#x2714; Site atualizado</span>
+
         <button class="topbar-btn" id="save-all-btn" aria-label="Salvar todas as alterações">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
           Salvar
         </button>
-        <button class="topbar-btn topbar-btn-primary" id="publish-btn" aria-label="Publicar alterações">
+        <button class="topbar-btn topbar-btn-primary" id="publish-btn" aria-label="Publicar alterações no site principal">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 2 15 22 11 12 2 8 22 2"></polyline></svg>
-          Publicar
+          Publicar no Site
         </button>
         <button class="topbar-btn topbar-logout" id="topbar-logout-btn" aria-label="Sair do painel">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
@@ -192,8 +195,8 @@
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 .49-3.51"></path></svg>
           </div>
           <div class="stat-card-info">
-            <span class="stat-number">Pendente</span>
-            <span class="stat-label">Último Publish</span>
+            <span class="stat-number stat-number-sm" id="dash-last-publish">Nunca</span>
+            <span class="stat-label">Última Publicação</span>
           </div>
         </div>
       </div>

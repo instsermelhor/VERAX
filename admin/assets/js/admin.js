@@ -75,7 +75,11 @@ function initState() {
 }
 
 function persistState() {
-  try { localStorage.setItem('verax_cms_content', JSON.stringify(CMS)); } catch(e) {
+  try {
+    localStorage.setItem('verax_cms_content', JSON.stringify(CMS));
+    // Marca alterações não publicadas no dashboard
+    updateSyncStatus('pending');
+  } catch(e) {
     console.warn('[CMS] localStorage quota exceeded — data not persisted.');
   }
 }
@@ -987,26 +991,115 @@ function initPageTabs() {
 /* ══════════════════════════════════════════════════════
    PUBLICAR / SALVAR GLOBAL
 ══════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════
+   INTEGRAÇÃO CMS ↔ SITE: PUBLICAÇÃO
+   Dispara evento storage para sincronizar o site principal em tempo real.
+══════════════════════════════════════════════════════ */
+const PUBLISH_KEY = 'verax_cms_published';
+
+/**
+ * Atualiza o indicador de status de sincronização na topbar.
+ * @param {'synced'|'pending'|'publishing'} status
+ */
+function updateSyncStatus(status) {
+  const indicator = document.getElementById('sync-status-indicator');
+  if (!indicator) return;
+
+  const states = {
+    synced:     { cls: 'synced',     label: 'Site atualizado',       icon: '✔' },
+    pending:    { cls: 'pending',    label: 'Alterações pendentes',   icon: '●' },
+    publishing: { cls: 'publishing', label: 'Publicando...',          icon: '↻' },
+  };
+
+  const s = states[status] || states.pending;
+  indicator.className = `sync-status-indicator sync-status-${s.cls}`;
+  indicator.textContent = `${s.icon} ${s.label}`;
+  indicator.setAttribute('title', `Status: ${s.label}`);
+}
+
+/**
+ * Publica o conteúdo atual do CMS para o site principal.
+ * Persiste no localStorage e dispara evento `storage` para
+ * atualização em tempo real em outras abas abertas do site.
+ */
+async function publishToSite() {
+  const publishBtn = document.getElementById('publish-btn');
+  if (publishBtn) { publishBtn.disabled = true; }
+  updateSyncStatus('publishing');
+
+  try {
+    // 1. Persiste os dados no localStorage
+    localStorage.setItem('verax_cms_content', JSON.stringify(CMS));
+
+    // 2. Registra metadados da publicação
+    const publishMeta = {
+      publishedAt: new Date().toISOString(),
+      version: `pub_${Date.now()}`,
+      sections: Object.keys(CMS.content || {}),
+    };
+    localStorage.setItem(PUBLISH_KEY, JSON.stringify(publishMeta));
+
+    // 3. Dispara evento `storage` MANUALMENTE para abas da mesma página
+    //    (o evento storage só dispara automaticamente em OUTRAS abas;
+    //     para a aba atual usamos StorageEvent via dispatchEvent)
+    try {
+      window.dispatchEvent(new StorageEvent('storage', {
+        key: PUBLISH_KEY,
+        newValue: JSON.stringify(publishMeta),
+        storageArea: localStorage,
+      }));
+    } catch (evErr) {
+      // Fallback: dispara evento customizado
+      window.dispatchEvent(new CustomEvent('veraxcms:published', { detail: publishMeta }));
+    }
+
+    // 4. Simula latência de publicação (remove ao integrar backend real)
+    await new Promise(r => setTimeout(r, 600));
+
+    updateSyncStatus('synced');
+    showToast('🚀 Publicação concluída! O site foi atualizado.', 'success', 4000);
+
+    // Atualiza dashboard
+    const dashLastPub = document.getElementById('dash-last-publish');
+    if (dashLastPub) {
+      dashLastPub.textContent = new Date().toLocaleString('pt-BR', {
+        day: '2-digit', month: 'short', year: 'numeric',
+        hour: '2-digit', minute: '2-digit',
+      });
+    }
+
+  } catch(e) {
+    updateSyncStatus('pending');
+    showToast('Erro ao publicar. Tente novamente.', 'error');
+    console.error('[CMS] Publish error:', e.message);
+  } finally {
+    if (publishBtn) {
+      publishBtn.disabled = false;
+      publishBtn.innerHTML = `
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 2 15 22 11 12 2 8 22 2"></polyline></svg>
+        Publicar no Site
+      `;
+    }
+  }
+}
+
 function initTopbarActions() {
   const publishBtn = document.getElementById('publish-btn');
-  publishBtn?.addEventListener('click', async () => {
-    publishBtn.disabled = true;
-    publishBtn.textContent = 'Publicando...';
-    try {
-      persistState();
-      await new Promise(r => setTimeout(r, 800)); // simula latência
-      showToast('Site publicado! Alterações estão ao vivo.', 'success');
-    } catch(e) {
-      showToast('Erro ao publicar. Tente novamente.', 'error');
-    } finally {
-      publishBtn.disabled = false;
-      publishBtn.textContent = 'Publicar';
-    }
-  });
+
+  // Atualiza texto do botão para ser mais descritivo
+  if (publishBtn) {
+    publishBtn.innerHTML = `
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 2 15 22 11 12 2 8 22 2"></polyline></svg>
+      Publicar no Site
+    `;
+    publishBtn.setAttribute('aria-label', 'Publicar alterações no site principal');
+  }
+
+  publishBtn?.addEventListener('click', publishToSite);
 
   document.getElementById('save-all-btn')?.addEventListener('click', () => {
     persistState();
-    showToast('Rascunho salvo localmente.', 'info');
+    showToast('Rascunho salvo localmente. Clique em "Publicar no Site" para aplicar.', 'info');
   });
 }
 

@@ -1616,3 +1616,59 @@ body.admin-body {
   color: var(--text-muted);
   margin-top: 2px;
 }
+
+/* ─── INTEGRAÇÃO CMS ↔ SITE: INDICADOR DE STATUS ───── */
+
+/* Indicador de status na topbar */
+.sync-status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  border: 1.5px solid transparent;
+  transition: all 200ms ease;
+  cursor: default;
+  user-select: none;
+  white-space: nowrap;
+}
+
+/* Estágio: Site atualizado */
+.sync-status-synced {
+  background: #EBF5F0;
+  color: #2D7A4F;
+  border-color: #9FCFB5;
+}
+
+/* Estágio: Alterações pendentes */
+.sync-status-pending {
+  background: #FDF8E7;
+  color: #B5941D;
+  border-color: #D4B85A;
+  animation: pulse-pending 2s ease-in-out infinite;
+}
+
+/* Estágio: Publicando */
+.sync-status-publishing {
+  background: #EEF2FF;
+  color: #4F46E5;
+  border-color: #A5B4FC;
+}
+
+@keyframes pulse-pending {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.65; }
+}
+
+/* Variant menor para stat-number com texto longo (ex: data/hora) */
+.stat-number-sm {
+  font-size: 0.78rem !important;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* ─── FIM: INTEGRAÇÃO CMS ↔ SITE ─────────────────── */
+
