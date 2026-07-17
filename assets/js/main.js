@@ -480,63 +480,199 @@ function validateField(field) {
 })();
 
 
-/* ─── 5C. PORTAL LOGIN FORM ──────────────────────────────────── */
-(function initPortalForm() {
-  const form          = document.getElementById('portal-form');
-  const passwordInput = document.getElementById('portal-password');
-  const toggleBtn     = document.getElementById('portal-toggle-pass');
+/* ─── 5C. PORTAL — TAB SWITCHER + ACESSO RESTRITO ────────────── */
+(function initPortalSection() {
 
-  if (!form) return;
+  /* ── TAB SWITCHER ─────────────────────────────────────────── */
+  const tabs   = document.querySelectorAll('.portal-tab');
+  const panels = document.querySelectorAll('.portal-tab-panel');
 
-  // Password visibility toggle
-  if (passwordInput && toggleBtn) {
-    toggleBtn.addEventListener('click', () => {
-      const isText = passwordInput.type === 'text';
-      passwordInput.type = isText ? 'password' : 'text';
-      toggleBtn.setAttribute('aria-label', isText ? 'Mostrar senha' : 'Ocultar senha');
+  function activatePortalTab(targetTab) {
+    tabs.forEach(t => {
+      const isActive = t === targetTab;
+      t.classList.toggle('active', isActive);
+      t.setAttribute('aria-selected', String(isActive));
+    });
+    const targetPanelId = targetTab.getAttribute('aria-controls');
+    panels.forEach(p => { p.hidden = (p.id !== targetPanelId); });
+  }
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => activatePortalTab(tab));
+    tab.addEventListener('keydown', e => {
+      const list = Array.from(tabs);
+      const idx  = list.indexOf(tab);
+      if (e.key === 'ArrowRight') { e.preventDefault(); activatePortalTab(list[(idx + 1) % list.length]); }
+      if (e.key === 'ArrowLeft')  { e.preventDefault(); activatePortalTab(list[(idx - 1 + list.length) % list.length]); }
+    });
+  });
+
+  /* ── PORTAL DO CLIENTE ────────────────────────────────────── */
+  const portalForm   = document.getElementById('portal-form');
+  const portalToggle = document.getElementById('portal-toggle-pass');
+  const portalPassEl = document.getElementById('portal-password');
+
+  if (portalForm) {
+    if (portalPassEl && portalToggle) {
+      portalToggle.addEventListener('click', () => {
+        const isText = portalPassEl.type === 'text';
+        portalPassEl.type = isText ? 'password' : 'text';
+        portalToggle.setAttribute('aria-label', isText ? 'Mostrar senha' : 'Ocultar senha');
+      });
+    }
+    portalForm.querySelectorAll('input[required]').forEach(field => {
+      field.addEventListener('blur',  () => validateField(field));
+      field.addEventListener('input', () => {
+        if (field.getAttribute('aria-invalid') === 'true') validateField(field);
+      });
+    });
+    portalForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      let isValid = true;
+      portalForm.querySelectorAll('input[required]').forEach(f => { if (!validateField(f)) isValid = false; });
+      if (!isValid) { const fi = portalForm.querySelector('[aria-invalid="true"]'); if (fi) fi.focus(); return; }
+
+      // [BUG-06 FIX] Portal do cliente requer integração backend — exibe aviso amigável
+      const btn = document.getElementById('portal-login-btn');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Verificando...';
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.textContent = 'Acessar Portal Seguro';
+          const errEl = document.getElementById('portal-password-error');
+          if (errEl) errEl.textContent = 'Portal do cliente em integração. Entre em contato pelo e-mail.';
+        }, 900);
+      }
     });
   }
 
-  // Field validation on blur
-  const fields = form.querySelectorAll('input[required]');
-  fields.forEach(field => {
-    field.addEventListener('blur', () => validateField(field));
+  /* ── ACESSO RESTRITO — integrado com painel administrativo ── */
+  const CRED_KEY    = 'verax_cms_credentials';
+  const SESSION_KEY = 'verax_cms_session';
+  const AUTH_KEY    = 'verax_cms_auth_site';   // rate limit independente
+  const MAX_TRIES   = 5;
+  const LOCKOUT_MS  = 15 * 60 * 1000;          // 15 min
+
+  const restrictedForm    = document.getElementById('restricted-form');
+  const restrictedAlert   = document.getElementById('restricted-alert');
+  const restrictedBtn     = document.getElementById('restricted-login-btn');
+  const restrictedBtnText = document.getElementById('restricted-btn-text');
+  const restrictedSpinner = document.getElementById('restricted-spinner');
+  const restrictedToggle  = document.getElementById('restricted-toggle-pass');
+  const restrictedPassEl  = document.getElementById('restricted-password');
+
+  if (!restrictedForm) return;
+
+  // Toggle senha
+  if (restrictedPassEl && restrictedToggle) {
+    restrictedToggle.addEventListener('click', () => {
+      const isText = restrictedPassEl.type === 'text';
+      restrictedPassEl.type = isText ? 'password' : 'text';
+      restrictedToggle.setAttribute('aria-label', isText ? 'Mostrar senha' : 'Ocultar senha');
+    });
+  }
+
+  // Validação em tempo real
+  restrictedForm.querySelectorAll('input[required]').forEach(field => {
+    field.addEventListener('blur',  () => validateField(field));
     field.addEventListener('input', () => {
       if (field.getAttribute('aria-invalid') === 'true') validateField(field);
     });
   });
 
-  form.addEventListener('submit', (e) => {
+  function showAlert(msg, type) {
+    if (!restrictedAlert) return;
+    restrictedAlert.hidden = false;
+    restrictedAlert.textContent = msg;
+    restrictedAlert.className = 'alert-restricted ' + type;
+  }
+  function hideAlert() {
+    if (restrictedAlert) { restrictedAlert.hidden = true; restrictedAlert.className = 'alert-restricted'; }
+  }
+
+  function getAttempts() {
+    try { return JSON.parse(localStorage.getItem(AUTH_KEY) || '{"count":0,"ts":0}'); }
+    catch(e) { return { count: 0, ts: 0 }; }
+  }
+  function setAttempts(data) { localStorage.setItem(AUTH_KEY, JSON.stringify(data)); }
+
+  function isLockedOut() {
+    const d = getAttempts();
+    return d.count >= MAX_TRIES && (Date.now() - d.ts) < LOCKOUT_MS;
+  }
+  function getLockoutMin() {
+    const d = getAttempts();
+    return Math.ceil((LOCKOUT_MS - (Date.now() - d.ts)) / 60000);
+  }
+
+  function getStoredCredentials() {
+    try { return JSON.parse(localStorage.getItem(CRED_KEY) || 'null'); }
+    catch(e) { return null; }
+  }
+
+  function createSession() {
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify({ ts: Date.now(), user: 'admin' }));
+  }
+
+  function setLoadingState(loading) {
+    if (restrictedBtn)     restrictedBtn.disabled     = loading;
+    if (restrictedBtnText) restrictedBtnText.hidden   = loading;
+    if (restrictedSpinner) restrictedSpinner.hidden   = !loading;
+  }
+
+  restrictedForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+    hideAlert();
 
+    // Valida campos
     let isValid = true;
-    fields.forEach(field => {
-      if (!validateField(field)) isValid = false;
-    });
+    restrictedForm.querySelectorAll('input[required]').forEach(f => { if (!validateField(f)) isValid = false; });
+    if (!isValid) { const fi = restrictedForm.querySelector('[aria-invalid="true"]'); if (fi) fi.focus(); return; }
 
-    if (!isValid) {
-      const firstInvalid = form.querySelector('[aria-invalid="true"]');
-      if (firstInvalid) firstInvalid.focus();
+    // Rate limiting
+    if (isLockedOut()) {
+      showAlert(`Acesso bloqueado. Aguarde ${getLockoutMin()} minuto(s).`, 'error');
       return;
     }
 
-    // [BUG-06 FIX] No credential logging. Show informational UI message.
-    const loginBtn = form.querySelector('button[type="submit"]');
-    if (loginBtn) {
-      loginBtn.disabled = true;
-      loginBtn.textContent = 'Verificando...';
-      setTimeout(() => {
-        loginBtn.disabled = false;
-        loginBtn.textContent = 'Acessar Portal Seguro';
-        // Show a user-friendly message (portal requires backend integration)
-        const emailInput = document.getElementById('portal-email');
-        if (emailInput) emailInput.setAttribute('aria-invalid', 'false');
-        const errorEl = document.getElementById('portal-password-error');
-        if (errorEl) errorEl.textContent = 'Portal em integração. Entre em contato por e-mail.';
-      }, 900);
+    setLoadingState(true);
+    // Latência simulada (UX + timing-safe)
+    await new Promise(r => setTimeout(r, 650));
+
+    const emailEl = document.getElementById('restricted-email');
+    const passEl  = document.getElementById('restricted-password');
+    const email   = emailEl ? emailEl.value.trim() : '';
+    const pass    = passEl  ? passEl.value : '';
+
+    // Lê credenciais do localStorage (mesmo storage do admin/login.html)
+    const stored     = getStoredCredentials();
+    const validEmail = stored ? stored.email    : 'contabilverax@gmail.com';
+    const validPass  = stored ? stored.password : '@@Rk08266570#';
+
+    if (email === validEmail && pass === validPass) {
+      setAttempts({ count: 0, ts: 0 });
+      createSession();
+      showAlert('✓ Autenticado! Redirecionando para o painel...', 'success');
+      setLoadingState(false);
+      setTimeout(() => { window.location.href = '/admin/index.html'; }, 800);
+    } else {
+      const d        = getAttempts();
+      const newCount = (d.count || 0) + 1;
+      setAttempts({ count: newCount, ts: Date.now() });
+      const remaining = MAX_TRIES - newCount;
+      setLoadingState(false);
+      if (remaining <= 0) {
+        showAlert('Conta bloqueada por 15 minutos.', 'error');
+      } else {
+        showAlert(`Credenciais inválidas. ${remaining} tentativa${remaining !== 1 ? 's' : ''} restante${remaining !== 1 ? 's' : ''}.`, 'error');
+      }
+      if (passEl) { passEl.value = ''; passEl.focus(); }
     }
   });
+
 })();
+
 
 
 /* ─── 6. COOKIE CONSENT (LGPD) ──────────────────────────────── */

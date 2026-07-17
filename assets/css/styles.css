@@ -1250,6 +1250,152 @@ h1, h2, h3, h4, h5, h6 {
   border-bottom: 1px solid var(--color-gray-200);
 }
 
+.portal-form-title--restricted {
+  border-bottom-color: rgba(181,148,29,0.25);
+}
+
+/* ─── PORTAL TABS ─────────────────────────────────────────────── */
+.portal-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: var(--space-6);
+  background: var(--color-bg-light);
+  border-radius: var(--radius-lg);
+  padding: 4px;
+  border: 1px solid var(--color-gray-200);
+}
+
+.portal-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0.55rem 0.75rem;
+  font-family: var(--font-heading);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--color-gray-500);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 200ms ease;
+  white-space: nowrap;
+}
+
+.portal-tab:hover:not(.active) {
+  color: var(--color-primary-dark);
+  background: rgba(10,31,68,0.04);
+}
+
+.portal-tab.active {
+  background: var(--color-white);
+  color: var(--color-primary-dark);
+  box-shadow: 0 1px 4px rgba(10,31,68,0.12), 0 0 0 1px rgba(10,31,68,0.06);
+}
+
+.portal-tab[data-tab="restrito"].active {
+  color: var(--color-accent-gold);
+}
+
+.portal-tab:focus-visible {
+  outline: 2px solid var(--color-accent-gold);
+  outline-offset: 2px;
+}
+
+/* ─── PORTAL TAB PANELS ───────────────────────────────────────── */
+.portal-tab-panel[hidden] { display: none; }
+
+/* ─── ACESSO RESTRITO EXTRAS ──────────────────────────────────── */
+.portal-restricted-desc {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--color-gray-600);
+  line-height: 1.6;
+  font-style: italic;
+  margin-bottom: var(--space-5);
+  padding: var(--space-3) var(--space-4);
+  background: rgba(181,148,29,0.05);
+  border-left: 3px solid var(--color-accent-gold);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+.alert-restricted {
+  padding: 0.7rem 1rem;
+  border-radius: var(--radius-md);
+  font-family: var(--font-heading);
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-bottom: var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.alert-restricted.error  { background: rgba(192,57,43,0.08); color: #C0392B; border: 1px solid rgba(192,57,43,0.20); }
+.alert-restricted.success{ background: rgba(45,122,79,0.08); color: #2D7A4F; border: 1px solid rgba(45,122,79,0.20); }
+
+.input-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.input-prefix-icon {
+  position: absolute;
+  left: 0.8rem;
+  color: var(--color-gray-400);
+  pointer-events: none;
+}
+.form-input--icon {
+  padding-left: 2.5rem !important;
+}
+
+.btn-restricted {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.5rem;
+  font-family: var(--font-heading);
+  font-size: var(--text-sm);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(135deg, #0A1F44 0%, #1A3A70 100%);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 200ms ease;
+  box-shadow: 0 4px 16px rgba(10,31,68,0.25);
+  margin-top: var(--space-2);
+  position: relative;
+}
+.btn-restricted:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0D2856 0%, #1E4585 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(10,31,68,0.30);
+}
+.btn-restricted:active { transform: translateY(0); }
+.btn-restricted:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.btn-spinner {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin-btn 0.7s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin-btn { to { transform: rotate(360deg); } }
+
+.portal-security-footer--restricted .security-mini-badge {
+  color: rgba(181,148,29,0.7);
+}
+
 .portal-security-footer {
   display: flex;
   align-items: center;

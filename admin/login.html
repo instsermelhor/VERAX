@@ -738,23 +738,35 @@
   const MAX_ATTEMPTS  = 5;
   const LOCKOUT_MS    = 15 * 60 * 1000; // 15 min
 
-  // Credenciais padrão (salvas no localStorage na primeira execução)
+  // Credenciais padrão — versão 2: contabilverax@gmail.com / @@Rk08266570#
+  const CRED_VERSION = 2;
+
   function getCredentials() {
     const saved = localStorage.getItem(CRED_KEY);
     if (saved) {
-      try { return JSON.parse(saved); } catch(e) {}
+      try {
+        const parsed = JSON.parse(saved);
+        // Migração: força atualização se for versão anterior (senha padrão antiga)
+        if (!parsed._version || parsed._version < CRED_VERSION) {
+          const updated = { email: 'contabilverax@gmail.com', password: '@@Rk08266570#', _version: CRED_VERSION };
+          localStorage.setItem(CRED_KEY, JSON.stringify(updated));
+          return updated;
+        }
+        return parsed;
+      } catch(e) {}
     }
     // Default credentials
     const defaults = {
       email:    'contabilverax@gmail.com',
-      password: 'admin',   // Em produção: hash bcrypt
+      password: '@@Rk08266570#',
+      _version: CRED_VERSION,
     };
     localStorage.setItem(CRED_KEY, JSON.stringify(defaults));
     return defaults;
   }
 
   function saveCredentials(email, password) {
-    localStorage.setItem(CRED_KEY, JSON.stringify({ email, password }));
+    localStorage.setItem(CRED_KEY, JSON.stringify({ email, password, _version: CRED_VERSION }));
   }
 
   // Verificar se já está autenticado

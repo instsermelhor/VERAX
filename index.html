@@ -683,62 +683,137 @@
           </div>
 
           <div class="portal-form-wrap">
-            <div class="portal-form-card" role="region" aria-label="Formulário de acesso ao portal do cliente">
-              <h3 class="portal-form-title">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B5941D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                </svg>
-                Acesso Seguro
-              </h3>
-              <form id="portal-form" class="portal-login-form" novalidate autocomplete="on" aria-label="Formulário de login ao portal">
-                <div class="form-group">
-                  <label for="portal-email" class="form-label">E-mail Corporativo</label>
-                  <input type="email" id="portal-email" name="email" class="form-input" placeholder="seu@empresa.com.br" autocomplete="email" required aria-required="true" aria-describedby="portal-email-error" maxlength="254">
-                  <span id="portal-email-error" class="field-error" role="alert" aria-live="polite"></span>
-                </div>
-                <div class="form-group">
-                  <label for="portal-password" class="form-label">Senha</label>
-                  <div class="input-password-wrap">
-                    <input type="password" id="portal-password" name="password" class="form-input" placeholder="••••••••" autocomplete="current-password" required aria-required="true" aria-describedby="portal-password-error" maxlength="128" minlength="8">
-                    <button type="button" class="password-toggle" id="portal-toggle-pass" aria-label="Mostrar ou ocultar senha">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                        <circle cx="12" cy="12" r="3"></circle>
-                      </svg>
-                    </button>
-                  </div>
-                  <span id="portal-password-error" class="field-error" role="alert" aria-live="polite"></span>
-                </div>
-                <button type="submit" class="btn btn-primary btn-full" id="portal-login-btn">
-                  Acessar Portal Seguro
+            <div class="portal-form-card" role="region" aria-label="Formulário de acesso">
+
+              <!-- TAB SWITCHER -->
+              <div class="portal-tabs" role="tablist" aria-label="Tipo de acesso">
+                <button class="portal-tab active" id="tab-cliente" role="tab"
+                  aria-selected="true" aria-controls="panel-cliente"
+                  data-tab="cliente">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                  Portal do Cliente
                 </button>
-                <a href="#" class="portal-forgot-link" id="portal-forgot-link"
-                   onclick="event.preventDefault(); alert('Para recuperar sua senha, entre em contato com o suporte: contato@veraxcontabil.com.br')">
-                  Esqueceu sua senha?
-                </a>
-              </form>
-              <div class="portal-security-footer" aria-label="Badges de segurança">
-                <div class="security-mini-badge">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <button class="portal-tab" id="tab-restrito" role="tab"
+                  aria-selected="false" aria-controls="panel-restrito"
+                  data-tab="restrito">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                  Acesso Restrito
+                </button>
+              </div>
+
+              <!-- PANEL: PORTAL DO CLIENTE -->
+              <div id="panel-cliente" class="portal-tab-panel" role="tabpanel" aria-labelledby="tab-cliente">
+                <h3 class="portal-form-title">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B5941D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                     <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                   </svg>
-                  <span>SSL 256-bit</span>
-                </div>
-                <div class="security-mini-badge">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                  </svg>
-                  <span>LGPD Conforme</span>
-                </div>
-                <div class="security-mini-badge">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                  </svg>
-                  <span>2FA Disponível</span>
+                  Acesso Seguro
+                </h3>
+                <form id="portal-form" class="portal-login-form" novalidate autocomplete="on" aria-label="Formulário de login ao portal">
+                  <div class="form-group">
+                    <label for="portal-email" class="form-label">E-mail Corporativo</label>
+                    <input type="email" id="portal-email" name="email" class="form-input" placeholder="seu@empresa.com.br" autocomplete="email" required aria-required="true" aria-describedby="portal-email-error" maxlength="254">
+                    <span id="portal-email-error" class="field-error" role="alert" aria-live="polite"></span>
+                  </div>
+                  <div class="form-group">
+                    <label for="portal-password" class="form-label">Senha</label>
+                    <div class="input-password-wrap">
+                      <input type="password" id="portal-password" name="password" class="form-input" placeholder="••••••••" autocomplete="current-password" required aria-required="true" aria-describedby="portal-password-error" maxlength="128" minlength="8">
+                      <button type="button" class="password-toggle" id="portal-toggle-pass" aria-label="Mostrar ou ocultar senha">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                          <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                      </button>
+                    </div>
+                    <span id="portal-password-error" class="field-error" role="alert" aria-live="polite"></span>
+                  </div>
+                  <button type="submit" class="btn btn-primary btn-full" id="portal-login-btn">
+                    Acessar Portal Seguro
+                  </button>
+                  <a href="#" class="portal-forgot-link" id="portal-forgot-link"
+                     onclick="event.preventDefault(); alert('Para recuperar sua senha, entre em contato com o suporte: contato@veraxcontabil.com.br')">
+                    Esqueceu sua senha?
+                  </a>
+                </form>
+                <div class="portal-security-footer" aria-label="Badges de segurança">
+                  <div class="security-mini-badge">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    <span>SSL 256-bit</span>
+                  </div>
+                  <div class="security-mini-badge">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                    <span>LGPD Conforme</span>
+                  </div>
+                  <div class="security-mini-badge">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span>2FA Disponível</span>
+                  </div>
                 </div>
               </div>
+
+              <!-- PANEL: ACESSO RESTRITO (ADMIN) -->
+              <div id="panel-restrito" class="portal-tab-panel" role="tabpanel" aria-labelledby="tab-restrito" hidden>
+                <h3 class="portal-form-title portal-form-title--restricted">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B5941D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  </svg>
+                  Acesso Restrito
+                </h3>
+                <p class="portal-restricted-desc">Exclusivo para administradores autorizados da Verax. Este acesso concede permissões de edição do painel CMS.</p>
+
+                <div class="alert-restricted" role="alert" id="restricted-alert" hidden></div>
+
+                <form id="restricted-form" class="portal-login-form" novalidate autocomplete="on" aria-label="Formulário de acesso restrito">
+                  <div class="form-group">
+                    <label for="restricted-email" class="form-label">E-mail Administrativo</label>
+                    <div class="input-icon-wrap">
+                      <svg class="input-prefix-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                      <input type="email" id="restricted-email" name="email" class="form-input form-input--icon" placeholder="admin@veraxcontabil.com" autocomplete="email" required aria-required="true" aria-describedby="restricted-email-error" maxlength="254">
+                    </div>
+                    <span id="restricted-email-error" class="field-error" role="alert" aria-live="polite"></span>
+                  </div>
+                  <div class="form-group">
+                    <label for="restricted-password" class="form-label">Senha Administrativa</label>
+                    <div class="input-password-wrap">
+                      <input type="password" id="restricted-password" name="password" class="form-input" placeholder="••••••••" autocomplete="current-password" required aria-required="true" aria-describedby="restricted-password-error" maxlength="128">
+                      <button type="button" class="password-toggle" id="restricted-toggle-pass" aria-label="Mostrar ou ocultar senha">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                      </button>
+                    </div>
+                    <span id="restricted-password-error" class="field-error" role="alert" aria-live="polite"></span>
+                  </div>
+                  <button type="submit" class="btn btn-restricted btn-full" id="restricted-login-btn">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    <span id="restricted-btn-text">Acessar Painel Administrativo</span>
+                    <span id="restricted-spinner" class="btn-spinner" hidden aria-hidden="true"></span>
+                  </button>
+                </form>
+
+                <div class="portal-security-footer portal-security-footer--restricted">
+                  <div class="security-mini-badge">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    <span>Sessão 8h</span>
+                  </div>
+                  <div class="security-mini-badge">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    <span>Área Protegida</span>
+                  </div>
+                  <div class="security-mini-badge">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <span>5 Tentativas</span>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
