@@ -239,7 +239,7 @@
 
       <!-- Page Selector -->
       <div class="page-selector" role="tablist" aria-label="Selecionar página">
-        <button class="page-tab active" role="tab" aria-selected="true" data-page="home" aria-controls="sections-panel">Home</button>
+        <button class="page-tab active" role="tab" aria-selected="true" data-page="inicio" aria-controls="sections-panel">Início</button>
         <button class="page-tab" role="tab" aria-selected="false" data-page="sobre">Quem Somos</button>
         <button class="page-tab" role="tab" aria-selected="false" data-page="servicos">Serviços</button>
         <button class="page-tab" role="tab" aria-selected="false" data-page="lideranca">Liderança</button>
@@ -251,7 +251,7 @@
         <div class="sections-list" id="sections-list">
 
           <!-- SECTION: Hero -->
-          <div class="section-card" id="section-hero">
+          <div class="section-card" id="section-hero" data-page="inicio">
             <div class="section-card-header">
               <div class="section-drag-handle" aria-hidden="true" title="Arrastar para reordenar">⠿</div>
               <div class="section-info">
@@ -347,18 +347,8 @@
                   <button type="button" class="btn-secondary" onclick="saveVersion('hero')">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline></svg>
                     Salvar Versão
-                  </button>
-                  <button type="submit" class="btn-primary">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    Salvar Seção
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-
-          <!-- SECTION: Pilares -->
-          <div class="section-card" id="section-pilares">
+                           <!-- SECTION: Pilares -->
+          <div class="section-card" id="section-pilares" data-page="inicio">
             <div class="section-card-header">
               <div class="section-drag-handle" aria-hidden="true">⠿</div>
               <div class="section-info">
@@ -401,7 +391,7 @@
           </div>
 
           <!-- SECTION: Sobre -->
-          <div class="section-card" id="section-sobre">
+          <div class="section-card" id="section-sobre" data-page="sobre">
             <div class="section-card-header">
               <div class="section-drag-handle" aria-hidden="true">⠿</div>
               <div class="section-info">
@@ -418,36 +408,244 @@
               <form class="section-form" id="form-sobre" data-section="sobre">
                 <div class="field-group">
                   <label class="field-label" for="sobre-title">Título</label>
-                  <input type="text" id="sobre-title" name="title" class="field-input" maxlength="80" value="Uma Organização Fundada na Verdade">
+                  <input type="text" id="sobre-title" name="sobre_title" class="field-input" maxlength="80" value="Uma Organização Fundada na Verdade">
                 </div>
                 <div class="field-group">
-                  <label class="field-label">
-                    Texto Principal (Rich Text)
-                    <span class="field-hint-inline">Suporta negrito, itálico e listas</span>
-                  </label>
-                  <div class="rich-editor-toolbar" role="toolbar" aria-label="Ferramentas de formatação">
-                    <button type="button" class="rte-btn" data-cmd="bold" aria-label="Negrito" title="Negrito (Ctrl+B)"><strong>B</strong></button>
-                    <button type="button" class="rte-btn" data-cmd="italic" aria-label="Itálico" title="Itálico (Ctrl+I)"><em>I</em></button>
-                    <button type="button" class="rte-btn" data-cmd="underline" aria-label="Sublinhado" title="Sublinhado"><u>U</u></button>
-                    <span class="rte-sep" aria-hidden="true"></span>
-                    <button type="button" class="rte-btn" data-cmd="insertUnorderedList" aria-label="Lista com marcadores" title="Lista">☰</button>
-                    <button type="button" class="rte-btn" data-cmd="insertOrderedList" aria-label="Lista numerada" title="Lista numerada">1.</button>
-                    <span class="rte-sep" aria-hidden="true"></span>
-                    <button type="button" class="rte-btn" data-cmd="removeFormat" aria-label="Remover formatação" title="Limpar formato">✕</button>
-                  </div>
-                  <div class="rich-editor" id="rte-sobre" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Editor de texto rico para Quem Somos">
-                    <p>A Verax Organização Contábil nasceu com um propósito claro: ser muito mais do que uma contabilidade tradicional. Somos parceiros estratégicos que entendem profundamente o universo empresarial.</p>
-                    <p>Com expertise consolidada em múltiplos segmentos econômicos, combinamos o rigor técnico das ciências contábeis com uma visão estratégica orientada ao resultado.</p>
-                  </div>
-                  <input type="hidden" id="sobre-text-hidden" name="text_content">
+                  <label class="field-label" for="sobre-p1">Parágrafo 1</label>
+                  <textarea id="sobre-p1" name="sobre_p1" class="field-textarea" rows="3"></textarea>
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="sobre-p2">Parágrafo 2</label>
+                  <textarea id="sobre-p2" name="sobre_p2" class="field-textarea" rows="3"></textarea>
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="sobre-p3">Parágrafo 3</label>
+                  <textarea id="sobre-p3" name="sobre_p3" class="field-textarea" rows="3"></textarea>
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="sobre-p4">Parágrafo 4 (Terceiro Setor)</label>
+                  <textarea id="sobre-p4" name="sobre_p4" class="field-textarea" rows="4"></textarea>
                 </div>
                 <div class="field-group">
                   <label class="field-label" for="sobre-quote">Frase de Destaque (Blockquote)</label>
-                  <textarea id="sobre-quote" name="quote" class="field-textarea" maxlength="200" rows="2">Nosso papel: Proteger, Organizar, Planejar, Otimizar e Fazer Crescer.</textarea>
+                  <textarea id="sobre-quote" name="sobre_quote" class="field-textarea" maxlength="200" rows="2"></textarea>
                 </div>
+
+                <h4 class="subsection-heading">Destaques Numéricos</h4>
+                <div class="form-grid-2">
+                  <div class="field-group">
+                    <label class="field-label" for="sobre-num1-val">Número 1 - Valor (ex: 15+)</label>
+                    <input type="text" id="sobre-num1-val" name="sobre_num1_value" class="field-input">
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="sobre-num1-lbl">Número 1 - Rótulo</label>
+                    <input type="text" id="sobre-num1-lbl" name="sobre_num1_label" class="field-input">
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="sobre-num2-val">Número 2 - Valor (ex: 300+)</label>
+                    <input type="text" id="sobre-num2-val" name="sobre_num2_value" class="field-input">
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="sobre-num2-lbl">Número 2 - Rótulo</label>
+                    <input type="text" id="sobre-num2-lbl" name="sobre_num2_label" class="field-input">
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="sobre-num3-val">Número 3 - Valor (ex: R$2bi+)</label>
+                    <input type="text" id="sobre-num3-val" name="sobre_num3_value" class="field-input">
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="sobre-num3-lbl">Número 3 - Rótulo</label>
+                    <input type="text" id="sobre-num3-lbl" name="sobre_num3_label" class="field-input">
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="sobre-num4-val">Número 4 - Valor (ex: 40+)</label>
+                    <input type="text" id="sobre-num4-val" name="sobre_num4_value" class="field-input">
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="sobre-num4-lbl">Número 4 - Rótulo</label>
+                    <input type="text" id="sobre-num4-lbl" name="sobre_num4_label" class="field-input">
+                  </div>
+                </div>
+
                 <div class="form-actions">
                   <button type="button" class="btn-secondary" onclick="resetSection('form-sobre')">Desfazer</button>
                   <button type="button" class="btn-secondary" onclick="saveVersion('sobre')">Salvar Versão</button>
+                  <button type="submit" class="btn-primary">Salvar Seção</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- SECTION: Serviços -->
+          <div class="section-card" id="section-servicos" data-page="servicos">
+            <div class="section-card-header">
+              <div class="section-drag-handle" aria-hidden="true">⠿</div>
+              <div class="section-info">
+                <h3 class="section-name">Serviços Estratégicos</h3>
+                <span class="section-type-badge">header</span>
+              </div>
+              <div class="section-actions">
+                <button class="section-toggle-btn" aria-expanded="false" aria-controls="section-servicos-body" aria-label="Expandir/colapsar seção Serviços">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+              </div>
+            </div>
+            <div class="section-card-body collapsed" id="section-servicos-body">
+              <form class="section-form" id="form-servicos" novalidate data-section="servicos">
+                <div class="form-grid-2">
+                  <div class="field-group">
+                    <label class="field-label" for="servicos-eyebrow">Eyebrow (texto pequeno)</label>
+                    <input type="text" id="servicos-eyebrow" name="servicos_eyebrow" class="field-input">
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="servicos-title">Título Principal</label>
+                    <input type="text" id="servicos-title" name="servicos_title" class="field-input">
+                  </div>
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="servicos-subtitle">Subtítulo</label>
+                  <textarea id="servicos-subtitle" name="servicos_subtitle" class="field-textarea" rows="2"></textarea>
+                </div>
+                <div class="form-actions">
+                  <button type="button" class="btn-secondary" onclick="resetSection('form-servicos')">Desfazer</button>
+                  <button type="button" class="btn-secondary" onclick="saveVersion('servicos')">Salvar Versão</button>
+                  <button type="submit" class="btn-primary">Salvar Seção</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- SECTION: Liderança -->
+          <div class="section-card" id="section-lideranca" data-page="lideranca">
+            <div class="section-card-header">
+              <div class="section-drag-handle" aria-hidden="true">⠿</div>
+              <div class="section-info">
+                <h3 class="section-name">Nossa Liderança</h3>
+                <span class="section-type-badge">liderança</span>
+              </div>
+              <div class="section-actions">
+                <button class="section-toggle-btn" aria-expanded="false" aria-controls="section-lideranca-body" aria-label="Expandir/colapsar seção Liderança">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+              </div>
+            </div>
+            <div class="section-card-body collapsed" id="section-lideranca-body">
+              <form class="section-form" id="form-lideranca" novalidate data-section="lideranca">
+                <div class="form-grid-2">
+                  <div class="field-group">
+                    <label class="field-label" for="lideranca-eyebrow">Eyebrow (texto pequeno)</label>
+                    <input type="text" id="lideranca-eyebrow" name="lideranca_eyebrow" class="field-input">
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="lideranca-title">Título Principal</label>
+                    <input type="text" id="lideranca-title" name="lideranca_title" class="field-input">
+                  </div>
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="lideranca-subtitle">Subtítulo</label>
+                  <textarea id="lideranca-subtitle" name="lideranca_subtitle" class="field-textarea" rows="2"></textarea>
+                </div>
+
+                <h4 class="subsection-heading">Líder 1</h4>
+                <div class="form-grid-2">
+                  <div class="field-group">
+                    <label class="field-label" for="leader1-name">Nome</label>
+                    <input type="text" id="leader1-name" name="leader1_name" class="field-input">
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="leader1-role">Cargo</label>
+                    <input type="text" id="leader1-role" name="leader1_role" class="field-input">
+                  </div>
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="leader1-bio">Biografia</label>
+                  <textarea id="leader1-bio" name="leader1_bio" class="field-textarea" rows="3"></textarea>
+                </div>
+                <div class="field-group">
+                  <label class="field-label">Foto do Líder 1</label>
+                  <div class="media-picker" id="leader1-photo-picker" data-field="leader1_photo">
+                    <img src="/assets/images/leader-vanessa.jpg" alt="Foto Líder 1" class="media-picker-preview" id="leader1-photo-preview">
+                    <div class="media-picker-overlay">
+                      <button type="button" class="media-picker-btn" onclick="openMediaPicker('leader1_photo', 'leader1-photo-preview')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                        Trocar Imagem
+                      </button>
+                    </div>
+                    <input type="hidden" name="leader1_photo" id="field-leader1_photo" value="/assets/images/leader-vanessa.jpg">
+                  </div>
+                </div>
+
+                <h4 class="subsection-heading">Líder 2</h4>
+                <div class="form-grid-2">
+                  <div class="field-group">
+                    <label class="field-label" for="leader2-name">Nome</label>
+                    <input type="text" id="leader2-name" name="leader2_name" class="field-input">
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="leader2-role">Cargo</label>
+                    <input type="text" id="leader2-role" name="leader2_role" class="field-input">
+                  </div>
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="leader2-bio">Biografia</label>
+                  <textarea id="leader2-bio" name="leader2_bio" class="field-textarea" rows="3"></textarea>
+                </div>
+                <div class="field-group">
+                  <label class="field-label">Foto do Líder 2</label>
+                  <div class="media-picker" id="leader2-photo-picker" data-field="leader2_photo">
+                    <img src="/assets/images/leader-female.png" alt="Foto Líder 2" class="media-picker-preview" id="leader2-photo-preview">
+                    <div class="media-picker-overlay">
+                      <button type="button" class="media-picker-btn" onclick="openMediaPicker('leader2_photo', 'leader2-photo-preview')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                        Trocar Imagem
+                      </button>
+                    </div>
+                    <input type="hidden" name="leader2_photo" id="field-leader2_photo" value="/assets/images/leader-female.png">
+                  </div>
+                </div>
+
+                <div class="form-actions">
+                  <button type="button" class="btn-secondary" onclick="resetSection('form-lideranca')">Desfazer</button>
+                  <button type="button" class="btn-secondary" onclick="saveVersion('lideranca')">Salvar Versão</button>
+                  <button type="submit" class="btn-primary">Salvar Seção</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- SECTION: Contato -->
+          <div class="section-card" id="section-contato" data-page="contato">
+            <div class="section-card-header">
+              <div class="section-drag-handle" aria-hidden="true">⠿</div>
+              <div class="section-info">
+                <h3 class="section-name">Fale Conosco</h3>
+                <span class="section-type-badge">contato</span>
+              </div>
+              <div class="section-actions">
+                <button class="section-toggle-btn" aria-expanded="false" aria-controls="section-contato-body" aria-label="Expandir/colapsar seção Contato">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+              </div>
+            </div>
+            <div class="section-card-body collapsed" id="section-contato-body">
+              <form class="section-form" id="form-contato" novalidate data-section="contato">
+                <div class="form-grid-2">
+                  <div class="field-group">
+                    <label class="field-label" for="contato-eyebrow">Eyebrow (texto pequeno)</label>
+                    <input type="text" id="contato-eyebrow" name="contato_eyebrow" class="field-input">
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="contato-title">Título Principal</label>
+                    <input type="text" id="contato-title" name="contato_title" class="field-input">
+                  </div>
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="contato-subtitle">Subtítulo / Descrição</label>
+                  <textarea id="contato-subtitle" name="contato_subtitle" class="field-textarea" rows="2"></textarea>
+                </div>
+                <div class="form-actions">
+                  <button type="button" class="btn-secondary" onclick="resetSection('form-contato')">Desfazer</button>
+                  <button type="button" class="btn-secondary" onclick="saveVersion('contato')">Salvar Versão</button>
                   <button type="submit" class="btn-primary">Salvar Seção</button>
                 </div>
               </form>
