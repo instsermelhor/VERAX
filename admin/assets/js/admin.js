@@ -60,7 +60,9 @@ function initState() {
     ];
   }
 
-  if (!CMS.content || !CMS.content.pilares_cards) {
+  if (!CMS.content) CMS.content = {};
+
+  if (!CMS.content.pilares_cards) {
     CMS.content.pilares_cards = [
       { id: 'p1', title: 'Estratégia',    desc: 'Ver hoje o que os outros só enxergam amanhã.'          },
       { id: 'p2', title: 'Precisão',      desc: 'Dados exatos que geram decisões extraordinárias.'      },
@@ -69,6 +71,84 @@ function initState() {
       { id: 'p5', title: 'Proteção',      desc: 'Segurança jurídica e contábil hoje, liberdade amanhã.' },
       { id: 'p6', title: 'Conformidade',  desc: 'Sua empresa blindada e em total alinhamento legal.'    },
     ];
+  }
+
+  if (!CMS.content.hero) {
+    CMS.content.hero = {
+      eyebrow: "Organização Contábil de Alto Valor",
+      title: "A VERDADE SUSTENTA RESULTADOS.",
+      subtitle: "Estabilidade, confiança e autoridade. A base que sustenta a sua gestão empresarial.",
+      cta_label: "Falar com um Consultor Estratégico",
+      stat1_number: "15", stat1_label: "Anos de Excelência", stat1_suffix: "+",
+      hero_bg_image: "/assets/images/hero-bg.png"
+    };
+  }
+
+  if (!CMS.content.sobre) {
+    CMS.content.sobre = {
+      sobre_title: "Uma Organização Fundada na Verdade",
+      sobre_p1: "A Organização Contábil Verax nasceu com um propósito claro: transformar a contabilidade em um instrumento de estratégia, segurança e crescimento. Mais do que cumprir obrigações fiscais e contábeis, atuamos como parceiros de negócios, oferecendo inteligência contábil para que empresários, gestores e organizações tomem decisões com confiança.",
+      sobre_p2: "Nossa atuação combina excelência técnica, visão estratégica e profundo conhecimento da realidade empresarial brasileira. Desenvolvemos soluções personalizadas que integram contabilidade, gestão tributária, planejamento societário, consultoria financeira e governança, sempre orientadas à geração de valor e à sustentabilidade dos negócios.",
+      sobre_p3: "A Verax é reconhecida por sua atuação consultiva e por antecipar cenários, identificar oportunidades e minimizar riscos, proporcionando aos clientes uma gestão mais eficiente, segura e alinhada aos seus objetivos estratégicos.",
+      sobre_p4: "Além de atender empresas dos mais diversos segmentos da economia, a Verax possui especialização no Terceiro Setor, oferecendo assessoria contábil, tributária, societária e de governança para associações, fundações, institutos, organizações da sociedade civil (OSCs), entidades beneficentes, religiosas e demais organizações sem fins lucrativos. Nossa equipe domina a legislação específica, as exigências de prestação de contas, imunidades e isenções tributárias, certificações, captação de recursos e os requisitos dos órgãos fiscalizadores, assegurando conformidade legal, transparência e fortalecimento institucional.",
+      sobre_quote: "Na Verax, acreditamos que números contam histórias, mas decisões inteligentes constroem legados.",
+      sobre_num1_value: "15", sobre_num1_label: "Anos de Mercado",
+      sobre_num2_value: "300", sobre_num2_label: "Clientes Ativos",
+      sobre_num3_value: "R$2bi", sobre_num3_label: "Patrimônio Gerenciado",
+      sobre_num4_value: "40", sobre_num4_label: "Especialistas"
+    };
+  }
+
+  if (!CMS.content.servicos) {
+    CMS.content.servicos = {
+      servicos_eyebrow: "O Que Fazemos",
+      servicos_title: "Serviços Estratégicos",
+      servicos_subtitle: "Soluções integradas que abrangem todas as dimensões da gestão contábil e financeira da sua empresa."
+    };
+  }
+
+  if (!CMS.content.lideranca) {
+    CMS.content.lideranca = {
+      lideranca_eyebrow: "Quem Conduz",
+      lideranca_title: "Nossa Liderança",
+      lideranca_subtitle: "Profissionais de alta performance, referências em suas especialidades.",
+      leader1_name: "Vanessa Martins",
+      leader1_role: "Sócia-Fundadora & Diretora Executiva",
+      leader1_bio: "Contadora com mais de 20 anos de experiência em planejamento tributário e governança corporativa. Especialista em reestruturação societária para empresas de médio e grande porte.",
+      leader1_photo: "/assets/images/leader-vanessa.jpg",
+      leader2_name: "Dra. Fernanda Costa",
+      leader2_role: "Sócia & Diretora de BPO Financeiro",
+      leader2_bio: "Especialista em BPO Financeiro e auditoria fiscal. Referência nacional em compliance tributário e gestão de riscos para empresas do setor de serviços e tecnologia.",
+      leader2_photo: "/assets/images/leader-female.png"
+    };
+  }
+
+  if (!CMS.content.contato) {
+    CMS.content.contato = {
+      contato_eyebrow: "Fale Conosco",
+      contato_title: "Inicie sua Transformação Contábil",
+      contato_subtitle: "Agende uma conversa estratégica sem compromisso com um dos nossos consultores especializados. Analisamos gratuitamente a situação atual do seu negócio."
+    };
+  }
+
+  if (!CMS.seo || !CMS.seo.home) {
+    CMS.seo = {
+      home: { title: "Verax Organização Contábil", description: "Inteligência contábil estratégica para sustentar seus resultados." },
+      sobre: { title: "Quem Somos | Verax", description: "Nossa história, propósitos e especialidade no Terceiro Setor." },
+      servicos: { title: "Serviços | Verax", description: "Contabilidade consultiva, planejamento tributário e BPO financeiro." },
+      lideranca: { title: "Liderança | Verax", description: "Conheça nossos sócios e diretores especialistas." },
+      contato: { title: "Contato | Verax", description: "Solicite uma proposta contábil sem compromisso." }
+    };
+  }
+
+  if (!CMS.global || !CMS.global.email) {
+    CMS.global = {
+      company_name: "Verax Organização Contábil",
+      email: "contato@veraxcontabil.com",
+      phone: "(11) 99460-3037",
+      address: "Av. Brig. Faria Lima, 1572 — Conj. 1022, Jardim Paulistano, São Paulo — CEP 01451-917",
+      whatsapp_link: "https://wa.me/5511994603037"
+    };
   }
 
   persistState();
@@ -921,6 +1001,37 @@ window.resetColors = function() {
 /* ══════════════════════════════════════════════════════
    SEO LIVE PREVIEW  [FIX-07]
 ══════════════════════════════════════════════════════ */
+function loadSeoData(page) {
+  const seoData = CMS.seo[page] || {};
+  const titleInput = document.getElementById('seo-title');
+  const descInput = document.getElementById('seo-desc');
+  const ogTitleInput = document.getElementById('seo-og-title');
+  const ogDescInput = document.getElementById('seo-og-desc');
+
+  if (titleInput) {
+    titleInput.value = seoData.title || '';
+    titleInput.dataset.original = seoData.title || '';
+  }
+  if (descInput) {
+    descInput.value = seoData.description || '';
+    descInput.dataset.original = seoData.description || '';
+  }
+  if (ogTitleInput) {
+    ogTitleInput.value = seoData.og_title || '';
+    ogTitleInput.dataset.original = seoData.og_title || '';
+  }
+  if (ogDescInput) {
+    ogDescInput.value = seoData.og_description || '';
+    ogDescInput.dataset.original = seoData.og_description || '';
+  }
+
+  // Trigger preview update
+  const previewTitle = document.getElementById('seo-preview-title');
+  const previewDesc = document.getElementById('seo-preview-desc');
+  if (previewTitle) previewTitle.textContent = seoData.title || 'Título da página';
+  if (previewDesc) previewDesc.textContent = seoData.description || 'Descrição da página...';
+}
+
 function initSeoPreview() {
   const titleInput   = document.getElementById('seo-title');
   const descInput    = document.getElementById('seo-desc');
@@ -934,7 +1045,7 @@ function initSeoPreview() {
 
   titleInput?.addEventListener('input', update);
   descInput?.addEventListener('input', update);
-  update(); // [FIX-07] inicializa com valores atuais
+  update();
 
   // SEO page tabs
   document.querySelectorAll('.page-tab[data-seo-page]').forEach(tab => {
@@ -945,8 +1056,17 @@ function initSeoPreview() {
       });
       tab.classList.add('active');
       tab.setAttribute('aria-selected', 'true');
+
+      const page = tab.dataset.seoPage;
+      loadSeoData(page);
     });
   });
+
+  // Initial load
+  const activeTab = document.querySelector('.page-tab.active[data-seo-page]');
+  if (activeTab) {
+    loadSeoData(activeTab.dataset.seoPage);
+  }
 }
 
 /* ══════════════════════════════════════════════════════
@@ -972,7 +1092,89 @@ window.validateScripts = function() {
 /* ══════════════════════════════════════════════════════
    PAGE TABS (view Páginas)
 ══════════════════════════════════════════════════════ */
+function loadFormValues() {
+  // Populate section forms
+  document.querySelectorAll('.section-form').forEach(form => {
+    const section = form.dataset.section;
+    if (!section) return;
+
+    const data = CMS.content[section];
+    if (!data) return;
+
+    // Set values for standard inputs/textareas
+    Object.entries(data).forEach(([key, val]) => {
+      const field = form.querySelector(`[name="${key}"]`);
+      if (field) {
+        field.value = val;
+        field.dataset.original = val;
+      }
+    });
+
+    // Special cases:
+    // 1. Rich Text Editors
+    const rte = form.querySelector('.rich-editor');
+    if (rte && data.text_content) {
+      rte.innerHTML = data.text_content;
+    }
+
+    // 2. Media Pickers previews
+    form.querySelectorAll('.media-picker').forEach(picker => {
+      const fieldName = picker.dataset.field;
+      const val = data[fieldName];
+      if (val) {
+        const preview = picker.querySelector('.media-picker-preview');
+        if (preview) preview.src = val;
+      }
+    });
+  });
+
+  // Populate Global Form
+  if (CMS.global) {
+    const globalForm = document.getElementById('form-global');
+    if (globalForm) {
+      Object.entries(CMS.global).forEach(([key, val]) => {
+        const field = globalForm.querySelector(`[name="${key}"]`);
+        if (field) {
+          field.value = val;
+          field.dataset.original = val;
+        }
+      });
+    }
+  }
+
+  // Populate Scripts Form
+  if (CMS.content.scripts) {
+    const scriptsForm = document.getElementById('form-scripts');
+    if (scriptsForm) {
+      const header = scriptsForm.querySelector('[name="header"]');
+      if (header) {
+        header.value = CMS.content.scripts.header || '';
+        header.dataset.original = CMS.content.scripts.header || '';
+      }
+      const footer = scriptsForm.querySelector('[name="footer"]');
+      if (footer) {
+        footer.value = CMS.content.scripts.footer || '';
+        footer.dataset.original = CMS.content.scripts.footer || '';
+      }
+    }
+  }
+
+  // Update char counters
+  initCharCounters();
+}
+
 function initPageTabs() {
+  function filterSections(page) {
+    document.querySelectorAll('#sections-list .section-card').forEach(card => {
+      const cardPage = card.dataset.page || 'inicio';
+      if (cardPage === page) {
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+
   document.querySelectorAll('.page-tab[data-page]').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('.page-tab[data-page]').forEach(t => {
@@ -982,10 +1184,19 @@ function initPageTabs() {
       tab.classList.add('active');
       tab.setAttribute('aria-selected', 'true');
 
+      const page = tab.dataset.page;
       const bc = document.getElementById('breadcrumb');
       if (bc) bc.innerHTML = `<span>Páginas › ${escapeHtml(tab.textContent.trim())}</span>`;
+
+      filterSections(page);
     });
   });
+
+  // Initial filter for the active tab (inicio)
+  const activeTab = document.querySelector('.page-tab.active[data-page]');
+  if (activeTab) {
+    filterSections(activeTab.dataset.page);
+  }
 }
 
 /* ══════════════════════════════════════════════════════
@@ -1196,6 +1407,7 @@ function initLogout() {
 document.addEventListener('DOMContentLoaded', () => {
   // 1. Estado
   initState();
+  loadFormValues();
 
   // 2. UI base
   initSidebar();
