@@ -4,3 +4,7 @@ node_modules/
 .env
 .env.local
 .env.production
+
+# Documentos pessoais / fiscais — nunca publicar no repositório
+*.pdf
+Decl*.pdf
