@@ -146,13 +146,12 @@
    */
   function applyHero(content) {
     if (!content) return;
+    const hero = content.hero || content;
 
     // Título principal (h1#hero-heading)
     const heroTitle = document.getElementById('hero-heading');
-    if (heroTitle && content.hero_title) {
-      // Preserva a tag <em> se o conteúdo contiver marcador *texto*
-      const raw = content.hero_title;
-      // Sanitiza: apenas permite <em> e <br>
+    if (heroTitle && (hero.hero_title || hero.title)) {
+      const raw = hero.hero_title || hero.title;
       const safe = raw
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
@@ -164,8 +163,9 @@
 
     // Subtítulo
     const heroSub = document.querySelector('.hero-subtitle');
-    if (heroSub && content.hero_subtitle) {
-      const safe = content.hero_subtitle
+    if (heroSub && (hero.hero_subtitle || hero.subtitle)) {
+      const raw = hero.hero_subtitle || hero.subtitle;
+      const safe = raw
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
@@ -175,17 +175,16 @@
 
     // CTA primário (texto do botão)
     const ctaPrimaryEl = document.querySelector('#hero-cta-primary span');
-    if (ctaPrimaryEl && content.hero_cta_primary_text) {
-      setText(ctaPrimaryEl, content.hero_cta_primary_text);
+    if (ctaPrimaryEl && (hero.hero_cta_primary_text || hero.cta_text)) {
+      setText(ctaPrimaryEl, hero.hero_cta_primary_text || hero.cta_text);
     }
 
     // Eyebrow text
     const eyebrowEl = document.querySelector('.hero-eyebrow-text');
-    if (eyebrowEl && content.hero_eyebrow) {
-      setText(eyebrowEl, content.hero_eyebrow);
-    }
+    const eyebrowVal = hero.hero_eyebrow || hero.eyebrow || '';
+    if (eyebrowEl && eyebrowVal) setText(eyebrowEl, eyebrowVal);
 
-    // Stats
+    // Stats — suporta formato aninhado (content.hero.stat1_value) e flat (content.stat1_value)
     const statsMap = [
       { selector: '.stat-item:nth-child(1) .stat-number', key: 'stat1_value', targetKey: 'stat1_target' },
       { selector: '.stat-item:nth-child(1) .stat-label',  key: 'stat1_label' },
@@ -200,10 +199,12 @@
       statsMap.forEach(({ selector, key, targetKey }) => {
         const el = heroStats.querySelector(selector);
         if (!el) return;
-        if (content[key]) {
-          setText(el, content[key]);
-          if (targetKey && content[targetKey]) {
-            el.dataset.target = content[targetKey];
+        const val = hero[key] || content[key] || '';
+        if (val) {
+          setText(el, val);
+          if (targetKey) {
+            const tgt = hero[targetKey] || content[targetKey] || '';
+            if (tgt) el.dataset.target = tgt;
           }
         }
       });
@@ -223,6 +224,8 @@
     const texts = document.querySelectorAll('#sobre .sobre-text');
     if (texts.length >= 1 && content.sobre_p1) setText(texts[0], content.sobre_p1);
     if (texts.length >= 2 && content.sobre_p2) setText(texts[1], content.sobre_p2);
+    if (texts.length >= 3 && content.sobre_p3) setText(texts[2], content.sobre_p3);
+    if (texts.length >= 4 && content.sobre_p4) setText(texts[3], content.sobre_p4);
 
     const quoteEl = document.querySelector('#sobre .quote-text');
     if (quoteEl && content.sobre_quote) setText(quoteEl, `"${content.sobre_quote}"`);
@@ -334,6 +337,18 @@
       setText(contatoHeading, content.contato_title);
     }
 
+    // Eyebrow
+    const eyebrow = document.querySelector('#contato .section-eyebrow');
+    if (eyebrow && content && content.contato_eyebrow) {
+      setText(eyebrow, content.contato_eyebrow);
+    }
+
+    // Subtitle
+    const desc = document.querySelector('#contato .contact-desc');
+    if (desc && content && content.contato_subtitle) {
+      setText(desc, content.contato_subtitle);
+    }
+
     // Canais de contato (email, phone, whatsapp)
     if (globalData) {
       const phoneChannels = document.querySelectorAll('.contact-channel[data-type="phone"] .channel-value');
@@ -346,6 +361,57 @@
         if (globalData.email) setText(el, globalData.email);
       });
     }
+  }
+
+  /**
+   * Aplica dados da seção Serviços.
+   * @param {Object} content - CMS.content
+   */
+  function applyServicos(content) {
+    if (!content) return;
+    const eyebrow = document.querySelector('#servicos .section-eyebrow');
+    if (eyebrow && content.servicos_eyebrow) setText(eyebrow, content.servicos_eyebrow);
+
+    // Usa o ID do h2 diretamente (section-title class pode não estar presente)
+    const title = document.getElementById('servicos-heading') || document.querySelector('#servicos .section-title');
+    if (title && content.servicos_title) setText(title, content.servicos_title);
+
+    const subtitle = document.querySelector('#servicos .section-subtitle');
+    if (subtitle && content.servicos_subtitle) setText(subtitle, content.servicos_subtitle);
+  }
+
+  /**
+   * Aplica dados da seção Liderança.
+   * @param {Object} content - CMS.content
+   */
+  function applyLideranca(content) {
+    if (!content) return;
+    const eyebrow = document.querySelector('#lideranca .section-eyebrow');
+    if (eyebrow && content.lideranca_eyebrow) setText(eyebrow, content.lideranca_eyebrow);
+
+    // Usa o ID do h2 diretamente (section-title class pode não estar presente)
+    const title = document.getElementById('lideranca-heading') || document.querySelector('#lideranca .section-title');
+    if (title && content.lideranca_title) setText(title, content.lideranca_title);
+
+    const subtitle = document.querySelector('#lideranca .section-subtitle');
+    if (subtitle && content.lideranca_subtitle) setText(subtitle, content.lideranca_subtitle);
+
+    const leaderNames  = document.querySelectorAll('.leader-name');
+    const leaderRoles  = document.querySelectorAll('.leader-role');
+    const leaderBios   = document.querySelectorAll('.leader-bio');
+    const leaderPhotos = document.querySelectorAll('.leader-photo');
+
+    // Líder 1
+    if (leaderNames.length  >= 1 && content.leader1_name)  setText(leaderNames[0],  content.leader1_name);
+    if (leaderRoles.length  >= 1 && content.leader1_role)  setText(leaderRoles[0],  content.leader1_role);
+    if (leaderBios.length   >= 1 && content.leader1_bio)   setText(leaderBios[0],   content.leader1_bio);
+    if (leaderPhotos.length >= 1 && content.leader1_photo) setAttr(leaderPhotos[0], 'src', content.leader1_photo);
+
+    // Líder 2
+    if (leaderNames.length  >= 2 && content.leader2_name)  setText(leaderNames[1],  content.leader2_name);
+    if (leaderRoles.length  >= 2 && content.leader2_role)  setText(leaderRoles[1],  content.leader2_role);
+    if (leaderBios.length   >= 2 && content.leader2_bio)   setText(leaderBios[1],   content.leader2_bio);
+    if (leaderPhotos.length >= 2 && content.leader2_photo) setAttr(leaderPhotos[1], 'src', content.leader2_photo);
   }
 
   /**
@@ -425,6 +491,8 @@
     applyHero(data.content);
     applySobre(data.content);
     applyPilares(data.content);
+    applyServicos(data.content);
+    applyLideranca(data.content);
     applyNav(data.nav);
     applyFooter(data.content, data.global);
     applyContato(data.content, data.global);
@@ -491,14 +559,16 @@
     applySection: function(section) {
       const data = readCMSData();
       switch (section) {
-        case 'design':  applyDesign(data.design);              break;
-        case 'seo':     applySEO(data.seo);                    break;
-        case 'hero':    applyHero(data.content);               break;
-        case 'sobre':   applySobre(data.content);              break;
-        case 'pilares': applyPilares(data.content);            break;
-        case 'nav':     applyNav(data.nav);                    break;
-        case 'footer':  applyFooter(data.content, data.global);break;
-        case 'contato': applyContato(data.content, data.global);break;
+        case 'design':    applyDesign(data.design);              break;
+        case 'seo':       applySEO(data.seo);                    break;
+        case 'hero':      applyHero(data.content);               break;
+        case 'sobre':     applySobre(data.content);              break;
+        case 'pilares':   applyPilares(data.content);            break;
+        case 'servicos':  applyServicos(data.content);           break;
+        case 'lideranca': applyLideranca(data.content);          break;
+        case 'nav':       applyNav(data.nav);                    break;
+        case 'footer':    applyFooter(data.content, data.global);break;
+        case 'contato':   applyContato(data.content, data.global);break;
         default: applyAll();
       }
     },
