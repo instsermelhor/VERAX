@@ -355,8 +355,12 @@ function initFormHandlers() {
       if (!validateFormData(data, section)) return;
 
       const btn = form.querySelector('[type="submit"]');
-      const originalText = btn ? btn.textContent.trim() : '';
-      if (btn) { btn.disabled = true; btn.textContent = 'Salvando...'; }
+      // [FIX-BTN] Salva innerHTML para preservar ícones SVG
+      const originalHTML = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 0.8s linear infinite" aria-hidden="true"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/><path d="M3.6 9h16.8"/></svg> Salvando...`;
+      }
 
       try {
         CMS.content[section] = data;
@@ -374,8 +378,8 @@ function initFormHandlers() {
         showToast('Erro ao salvar. Tente novamente.', 'error');
         console.error('[CMS] Save error:', err.message);
       } finally {
-        // [FIX-06] Restaura texto original do botão
-        if (btn) { btn.disabled = false; btn.textContent = originalText || 'Salvar Seção'; }
+        // [FIX-BTN] Restaura innerHTML original (preserva SVG + texto)
+        if (btn) { btn.disabled = false; btn.innerHTML = originalHTML || 'Salvar Seção'; }
       }
     });
   });
